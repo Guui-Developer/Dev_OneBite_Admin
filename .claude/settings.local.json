@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(mkdir:*)",
+      "Bash(git mv:*)",
+      "Bash(move:*)",
+      "Bash(del \"C:\\Workspace\\Dev_OneBite\\Dev_OneBite_Admin\\src\\api\\model\\request\\learndata.ts\")",
+      "Bash(npm run build:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
