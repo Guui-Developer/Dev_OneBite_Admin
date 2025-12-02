@@ -1,7 +1,7 @@
 .sidebar {
   width: 250px;
-  background: white;
-  border-right: 1px solid #e5e7eb;
+  background: #1f2937;
+  border-right: 1px solid #374151;
   height: calc(100vh - 64px);
   position: sticky;
   top: 64px;
@@ -17,21 +17,21 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.875rem 1.5rem;
-  color: #6b7280;
+  color: #9ca3af;
   text-decoration: none;
   transition: all 0.2s;
   border-left: 3px solid transparent;
 }
 
 .sidebar-link:hover {
-  background: #f9fafb;
-  color: #667eea;
+  background: #374151;
+  color: #60a5fa;
 }
 
 .sidebar-link.active {
-  background: #f3f4ff;
-  color: #667eea;
-  border-left-color: #667eea;
+  background: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+  border-left-color: #60a5fa;
   font-weight: 600;
 }
 

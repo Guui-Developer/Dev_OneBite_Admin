@@ -11,8 +11,18 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color: #1f2937;
-  background-color: #ffffff;
+  /* Dark Theme Colors */
+  --bg-primary: #111827;
+  --bg-secondary: #1f2937;
+  --bg-tertiary: #374151;
+  --text-primary: #f9fafb;
+  --text-secondary: #e5e7eb;
+  --text-muted: #9ca3af;
+  --border-color: #374151;
+  --accent-color: #3b82f6;
+
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -24,8 +34,10 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background: var(--bg-primary);
 }
 
 #root {
   min-height: 100vh;
+  background: var(--bg-primary);
 }
