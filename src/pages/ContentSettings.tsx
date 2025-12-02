@@ -287,30 +287,36 @@ export default function ContentSettings() {
   };
 
   const renderTypeSpecificFields = () => {
+    const inputClass = "w-full px-4 py-3 border border-gray-600 rounded-lg text-base text-gray-200 bg-gray-700 transition-colors focus:outline-none focus:border-blue-400 focus:bg-gray-600";
+    const textareaClass = "w-full px-4 py-3 border border-gray-600 rounded-lg text-base text-gray-200 bg-gray-700 transition-colors focus:outline-none focus:border-blue-400 focus:bg-gray-600 font-mono";
+    const labelClass = "block mb-2 text-gray-300 text-sm font-semibold";
+
     switch (selectedType) {
       case 'code_tip':
         return (
           <>
-            <div className="form-group">
-              <label>코드 *</label>
+            <div>
+              <label className={labelClass}>코드 *</label>
               <textarea
                 rows={6}
                 placeholder="const example = () => {...}"
-                className="code-textarea"
+                className={textareaClass}
               />
             </div>
-            <div className="form-group">
-              <label>언어 *</label>
+            <div>
+              <label className={labelClass}>언어 *</label>
               <input
                 type="text"
                 placeholder="예: JavaScript"
+                className={inputClass}
               />
             </div>
-            <div className="form-group">
-              <label>설명 *</label>
+            <div>
+              <label className={labelClass}>설명 *</label>
               <textarea
                 rows={3}
                 placeholder="코드에 대한 설명을 입력하세요"
+                className={textareaClass}
               />
             </div>
           </>
@@ -319,19 +325,20 @@ export default function ContentSettings() {
       case 'bug_challenge':
         return (
           <>
-            <div className="form-group">
-              <label>문제 코드 *</label>
+            <div>
+              <label className={labelClass}>문제 코드 *</label>
               <textarea
                 rows={6}
                 placeholder="버그가 있는 코드를 입력하세요"
-                className="code-textarea"
+                className={textareaClass}
               />
             </div>
-            <div className="form-group">
-              <label>정답/해설 *</label>
+            <div>
+              <label className={labelClass}>정답/해설 *</label>
               <textarea
                 rows={4}
                 placeholder="버그의 원인과 해결 방법을 설명하세요"
+                className={textareaClass}
               />
             </div>
           </>
@@ -340,27 +347,28 @@ export default function ContentSettings() {
       case 'code_review':
         return (
           <>
-            <div className="form-group">
-              <label>개선 전 코드 *</label>
+            <div>
+              <label className={labelClass}>개선 전 코드 *</label>
               <textarea
                 rows={5}
                 placeholder="개선 전 코드"
-                className="code-textarea"
+                className={textareaClass}
               />
             </div>
-            <div className="form-group">
-              <label>개선 후 코드 *</label>
+            <div>
+              <label className={labelClass}>개선 후 코드 *</label>
               <textarea
                 rows={5}
                 placeholder="개선 후 코드"
-                className="code-textarea"
+                className={textareaClass}
               />
             </div>
-            <div className="form-group">
-              <label>피드백 *</label>
+            <div>
+              <label className={labelClass}>피드백 *</label>
               <textarea
                 rows={3}
                 placeholder="개선 사항에 대한 설명"
+                className={textareaClass}
               />
             </div>
           </>
@@ -369,27 +377,30 @@ export default function ContentSettings() {
       case 'interview':
         return (
           <>
-            <div className="form-group">
-              <label>질문 *</label>
+            <div>
+              <label className={labelClass}>질문 *</label>
               <textarea
                 rows={3}
                 placeholder="면접 질문을 입력하세요"
+                className={textareaClass}
               />
             </div>
-            <div className="form-group">
-              <label>답변 *</label>
+            <div>
+              <label className={labelClass}>답변 *</label>
               <textarea
                 rows={5}
                 placeholder="모범 답변을 입력하세요"
+                className={textareaClass}
               />
             </div>
-            <div className="form-group">
-              <label>꼬리 질문 (선택)</label>
+            <div>
+              <label className={labelClass}>꼬리 질문 (선택)</label>
               <textarea
                 rows={3}
                 placeholder="추가 꼬리 질문을 한 줄씩 입력하세요"
+                className={textareaClass}
               />
-              <span className="form-hint">각 줄마다 하나의 꼬리 질문</span>
+              <span className="text-gray-500 text-xs mt-1 block">각 줄마다 하나의 꼬리 질문</span>
             </div>
           </>
         );
@@ -397,18 +408,20 @@ export default function ContentSettings() {
       case 'meme':
         return (
           <>
-            <div className="form-group">
-              <label>이미지 URL *</label>
+            <div>
+              <label className={labelClass}>이미지 URL *</label>
               <input
                 type="text"
                 placeholder="https://example.com/image.jpg"
+                className={inputClass}
               />
             </div>
-            <div className="form-group">
-              <label>설명 *</label>
+            <div>
+              <label className={labelClass}>설명 *</label>
               <textarea
                 rows={3}
                 placeholder="밈에 대한 설명"
+                className={textareaClass}
               />
             </div>
           </>
@@ -511,18 +524,25 @@ export default function ContentSettings() {
       </div>
 
       {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal-content modal-large" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>{editingContent ? '콘텐츠 수정' : '콘텐츠 추가'}</h2>
-              <button className="modal-close" onClick={() => setShowModal(false)}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowModal(false)}>
+          <div className="bg-gray-800 rounded-lg shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto border border-gray-700" onClick={(e) => e.stopPropagation()}>
+            <div className="sticky top-0 bg-gray-800 flex justify-between items-center p-6 border-b border-gray-700 z-10">
+              <h2 className="text-xl font-semibold text-gray-50 m-0">{editingContent ? '콘텐츠 수정' : '콘텐츠 추가'}</h2>
+              <button
+                className="text-gray-400 hover:text-gray-200 text-3xl leading-none transition-colors"
+                onClick={() => setShowModal(false)}
+              >
                 ×
               </button>
             </div>
-            <div className="modal-body">
-              <div className="form-group">
-                <label>타입 *</label>
-                <select value={selectedType} onChange={handleTypeChange}>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block mb-2 text-gray-300 text-sm font-semibold">타입 *</label>
+                <select
+                  value={selectedType}
+                  onChange={handleTypeChange}
+                  className="w-full px-4 py-3 border border-gray-600 rounded-lg text-base text-gray-200 bg-gray-700 transition-colors focus:outline-none focus:border-blue-400 focus:bg-gray-600"
+                >
                   <option value="code_tip">💡 코드 팁</option>
                   <option value="bug_challenge">🐛 버그 챌린지</option>
                   <option value="code_review">👨‍💻 코드 리뷰</option>
@@ -531,40 +551,45 @@ export default function ContentSettings() {
                 </select>
               </div>
 
-              <div className="form-group">
-                <label>제목 *</label>
+              <div>
+                <label className="block mb-2 text-gray-300 text-sm font-semibold">제목 *</label>
                 <input
                   type="text"
                   placeholder="예: 💡 옵셔널 체이닝"
                   defaultValue={editingContent?.title}
+                  className="w-full px-4 py-3 border border-gray-600 rounded-lg text-base text-gray-200 bg-gray-700 transition-colors focus:outline-none focus:border-blue-400 focus:bg-gray-600"
                 />
               </div>
 
               {renderTypeSpecificFields()}
 
-              <div className="form-group">
-                <label>카테고리 태그 * (복수 선택 가능)</label>
-                <div className="category-selector-grouped">
+              <div>
+                <label className="block mb-2 text-gray-300 text-sm font-semibold">카테고리 태그 * (복수 선택 가능)</label>
+                <div className="bg-gray-700 rounded-lg p-4 border border-gray-600 space-y-4">
                   {GROUPS.map((group) => {
                     const groupCategories = AVAILABLE_CATEGORIES.filter(c => c.groupKey === group.groupKey);
                     if (groupCategories.length === 0) return null;
 
                     return (
-                      <div key={group.groupKey} className="category-group">
-                        <div className="category-group-header">
-                          <img src={group.icon} alt={group.groupLabel} className="group-icon-small" />
-                          <span className="group-label">{group.groupLabel}</span>
+                      <div key={group.groupKey} className="space-y-2">
+                        <div className="flex items-center gap-2 pb-2 border-b border-gray-600">
+                          <img src={group.icon} alt={group.groupLabel} className="w-5 h-5" />
+                          <span className="text-gray-300 font-semibold text-sm">{group.groupLabel}</span>
                         </div>
-                        <div className="category-group-items">
+                        <div className="grid grid-cols-2 gap-2">
                           {groupCategories.map((category) => (
-                            <label key={category.key} className="category-checkbox">
+                            <label
+                              key={category.key}
+                              className="flex items-center gap-2 px-3 py-2 bg-gray-600 rounded-lg hover:bg-gray-500 cursor-pointer transition-colors"
+                            >
                               <input
                                 type="checkbox"
                                 checked={selectedTags.includes(category.key)}
                                 onChange={() => handleTagToggle(category.key)}
+                                className="w-4 h-4 rounded border-gray-500 text-blue-600 focus:ring-blue-500 focus:ring-offset-gray-800"
                               />
-                              <img src={category.icon} alt={category.label} className="category-icon-small" />
-                              <span>{category.label}</span>
+                              <img src={category.icon} alt={category.label} className="w-4 h-4" />
+                              <span className="text-gray-200 text-sm">{category.label}</span>
                             </label>
                           ))}
                         </div>
@@ -573,25 +598,34 @@ export default function ContentSettings() {
                   })}
                 </div>
                 {selectedTags.length > 0 && (
-                  <div className="selected-tags">
-                    선택된 태그: {selectedTags.map(tag => {
-                      const category = AVAILABLE_CATEGORIES.find(c => c.key === tag);
-                      return (
-                        <span key={tag} className="tag">
-                          {category && <img src={category.icon} alt={category.label} className="tag-icon" />}
-                          {tag}
-                        </span>
-                      );
-                    })}
+                  <div className="mt-3 p-3 bg-blue-600/10 rounded-lg border border-blue-500/30">
+                    <span className="text-gray-300 text-sm font-semibold mr-2">선택된 태그:</span>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {selectedTags.map(tag => {
+                        const category = AVAILABLE_CATEGORIES.find(c => c.key === tag);
+                        return (
+                          <span key={tag} className="inline-flex items-center gap-1 px-3 py-1 bg-blue-600/20 text-blue-400 rounded-full text-sm font-medium border border-blue-500/30">
+                            {category && <img src={category.icon} alt={category.label} className="w-3 h-3" />}
+                            {tag}
+                          </span>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
               </div>
             </div>
-            <div className="modal-footer">
-              <button className="btn-secondary" onClick={() => setShowModal(false)}>
+            <div className="flex gap-3 p-6 border-t border-gray-700">
+              <button
+                className="flex-1 py-3 bg-gray-700 text-gray-200 rounded-lg font-semibold hover:bg-gray-600 transition-colors"
+                onClick={() => setShowModal(false)}
+              >
                 취소
               </button>
-              <button className="btn-primary" onClick={handleSubmit}>
+              <button
+                className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                onClick={handleSubmit}
+              >
                 {editingContent ? '수정' : '추가'}
               </button>
             </div>

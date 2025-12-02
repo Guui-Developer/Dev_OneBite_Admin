@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import type { MouseEvent } from 'react';
-import { FiPlus, FiEdit2, FiTrash2 } from 'react-icons/fi';
-import './CategoryManagement.css';
+import { Plus, Edit2, Trash2 } from 'lucide-react';
+
+// Alias for compatibility
+const FiPlus = Plus;
+const FiEdit2 = Edit2;
+const FiTrash2 = Trash2;
 
 interface Group {
   groupKey: string;
@@ -103,48 +107,64 @@ export default function CategoryManagement() {
   const editingCategoryData = editingCategory ? categories.find(c => c.key === editingCategory) : null;
 
   return (
-    <div className="category-management">
-      <div className="management-header">
-        <h1>그룹 & 카테고리 관리</h1>
-        <div className="header-info">
+    <div className="max-w-[1400px]">
+      <div className="mb-8 flex justify-between items-center">
+        <h1 className="text-3xl font-bold text-gray-50">그룹 & 카테고리 관리</h1>
+        <div className="flex items-center gap-3 text-gray-400">
           <span>{groups.length}개 그룹</span>
           <span>•</span>
           <span>{categories.length}개 카테고리</span>
         </div>
       </div>
 
-      <div className="management-content">
+      <div className="grid grid-cols-2 gap-6">
         {/* 좌측: 그룹 목록 */}
-        <div className="groups-panel">
-          <div className="panel-header">
-            <h2>그룹</h2>
-            <button className="btn-icon" onClick={handleAddGroup} title="그룹 추가">
+        <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-semibold text-gray-50 m-0">그룹</h2>
+            <button
+              className="p-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+              onClick={handleAddGroup}
+              title="그룹 추가"
+            >
               <FiPlus />
             </button>
           </div>
-          <div className="groups-list">
+          <div className="flex flex-col gap-3">
             {groups.map((group) => (
               <div
                 key={group.groupKey}
-                className={`group-card ${selectedGroup === group.groupKey ? 'active' : ''}`}
+                className={`p-4 rounded-lg border transition-all cursor-pointer ${
+                  selectedGroup === group.groupKey
+                    ? 'bg-blue-600/20 border-blue-500'
+                    : 'bg-gray-700 border-gray-600 hover:bg-gray-600'
+                }`}
                 onClick={() => setSelectedGroup(group.groupKey)}
               >
-                <div className="group-info">
-                  <img src={group.icon} alt={group.groupLabel} className="group-icon" />
-                  <div className="group-details">
-                    <h3>{group.groupLabel}</h3>
-                    <span className="group-key">{group.groupKey}</span>
+                <div className="flex items-center gap-3 mb-2">
+                  <img src={group.icon} alt={group.groupLabel} className="w-8 h-8" />
+                  <div className="flex-1">
+                    <h3 className="text-gray-50 font-semibold m-0 mb-1">{group.groupLabel}</h3>
+                    <span className="text-gray-400 text-sm">{group.groupKey}</span>
                   </div>
-                  <span className="group-count">
+                  <span className="px-3 py-1 bg-gray-800 rounded-full text-gray-300 text-sm font-semibold">
                     {categories.filter(c => c.groupKey === group.groupKey).length}
                   </span>
                 </div>
-                <div className="group-actions" onClick={(e) => e.stopPropagation()}>
-                  <button className="btn-action btn-edit" onClick={() => handleEditGroup(group.groupKey)}>
-                    <FiEdit2 />
+                <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                  <button
+                    className="flex-1 px-3 py-2 rounded bg-gray-600 hover:bg-gray-500 text-gray-200 transition-colors flex items-center justify-center gap-2"
+                    onClick={() => handleEditGroup(group.groupKey)}
+                  >
+                    <FiEdit2 size={14} />
+                    <span className="text-sm">수정</span>
                   </button>
-                  <button className="btn-action btn-delete" onClick={() => handleDeleteGroup(group.groupKey)}>
-                    <FiTrash2 />
+                  <button
+                    className="flex-1 px-3 py-2 rounded bg-red-600/20 hover:bg-red-600/30 text-red-400 transition-colors flex items-center justify-center gap-2"
+                    onClick={() => handleDeleteGroup(group.groupKey)}
+                  >
+                    <FiTrash2 size={14} />
+                    <span className="text-sm">삭제</span>
                   </button>
                 </div>
               </div>
@@ -153,38 +173,53 @@ export default function CategoryManagement() {
         </div>
 
         {/* 우측: 카테고리 목록 */}
-        <div className="categories-panel">
-          <div className="panel-header">
-            <h2>{selectedGroupData?.groupLabel} 카테고리</h2>
-            <button className="btn-icon" onClick={handleAddCategory} title="카테고리 추가">
+        <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-semibold text-gray-50 m-0">{selectedGroupData?.groupLabel} 카테고리</h2>
+            <button
+              className="p-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+              onClick={handleAddCategory}
+              title="카테고리 추가"
+            >
               <FiPlus />
             </button>
           </div>
-          <div className="categories-grid">
+          <div className="grid grid-cols-2 gap-4">
             {filteredCategories.map((category) => (
-              <div key={category.key} className="category-card">
-                <div className="category-header">
-                  <img src={category.icon} alt={category.label} className="category-icon" />
-                  <div className="category-info">
-                    <h3>{category.label}</h3>
-                    <span className="category-key">{category.key}</span>
+              <div key={category.key} className="bg-gray-700 p-4 rounded-lg border border-gray-600 hover:bg-gray-600 transition-colors">
+                <div className="flex items-center gap-3 mb-3">
+                  <img src={category.icon} alt={category.label} className="w-10 h-10" />
+                  <div className="flex-1">
+                    <h3 className="text-gray-50 font-semibold m-0 mb-1">{category.label}</h3>
+                    <span className="text-gray-400 text-sm">{category.key}</span>
                   </div>
-                  <span className="category-count">{category.count}</span>
+                  <span className="px-2 py-1 bg-gray-800 rounded text-gray-300 text-sm font-semibold">{category.count}</span>
                 </div>
-                <div className="category-actions">
-                  <button className="btn-action btn-edit" onClick={() => handleEditCategory(category.key)}>
-                    <FiEdit2 />
+                <div className="flex gap-2">
+                  <button
+                    className="flex-1 px-3 py-2 rounded bg-gray-600 hover:bg-gray-500 text-gray-200 transition-colors flex items-center justify-center gap-2"
+                    onClick={() => handleEditCategory(category.key)}
+                  >
+                    <FiEdit2 size={14} />
+                    <span className="text-sm">수정</span>
                   </button>
-                  <button className="btn-action btn-delete" onClick={() => handleDeleteCategory(category.key)}>
-                    <FiTrash2 />
+                  <button
+                    className="flex-1 px-3 py-2 rounded bg-red-600/20 hover:bg-red-600/30 text-red-400 transition-colors flex items-center justify-center gap-2"
+                    onClick={() => handleDeleteCategory(category.key)}
+                  >
+                    <FiTrash2 size={14} />
+                    <span className="text-sm">삭제</span>
                   </button>
                 </div>
               </div>
             ))}
             {filteredCategories.length === 0 && (
-              <div className="empty-state">
-                <p>이 그룹에 카테고리가 없습니다</p>
-                <button className="btn-primary" onClick={handleAddCategory}>
+              <div className="col-span-2 flex flex-col items-center justify-center py-12 text-gray-400">
+                <p className="mb-4">이 그룹에 카테고리가 없습니다</p>
+                <button
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-semibold"
+                  onClick={handleAddCategory}
+                >
                   카테고리 추가
                 </button>
               </div>
@@ -195,51 +230,63 @@ export default function CategoryManagement() {
 
       {/* 그룹 모달 */}
       {showGroupModal && (
-        <div className="modal-overlay" onClick={() => setShowGroupModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>{editingGroupData ? '그룹 수정' : '그룹 추가'}</h2>
-              <button className="modal-close" onClick={() => setShowGroupModal(false)}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowGroupModal(false)}>
+          <div className="bg-gray-800 rounded-lg shadow-2xl w-full max-w-md border border-gray-700" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center p-6 border-b border-gray-700">
+              <h2 className="text-xl font-semibold text-gray-50 m-0">{editingGroupData ? '그룹 수정' : '그룹 추가'}</h2>
+              <button
+                className="text-gray-400 hover:text-gray-200 text-3xl leading-none transition-colors"
+                onClick={() => setShowGroupModal(false)}
+              >
                 ×
               </button>
             </div>
-            <div className="modal-body">
-              <div className="form-group">
-                <label>그룹 키 *</label>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block mb-2 text-gray-300 text-sm font-semibold">그룹 키 *</label>
                 <input
                   type="text"
                   placeholder="예: cloud"
                   defaultValue={editingGroupData?.groupKey}
+                  className="w-full px-4 py-3 border border-gray-600 rounded-lg text-base text-gray-200 bg-gray-700 transition-colors focus:outline-none focus:border-blue-400 focus:bg-gray-600"
                 />
-                <span className="form-hint">영문 소문자로 입력하세요</span>
+                <span className="text-gray-500 text-xs mt-1 block">영문 소문자로 입력하세요</span>
               </div>
-              <div className="form-group">
-                <label>그룹명 *</label>
+              <div>
+                <label className="block mb-2 text-gray-300 text-sm font-semibold">그룹명 *</label>
                 <input
                   type="text"
                   placeholder="예: 클라우드"
                   defaultValue={editingGroupData?.groupLabel}
+                  className="w-full px-4 py-3 border border-gray-600 rounded-lg text-base text-gray-200 bg-gray-700 transition-colors focus:outline-none focus:border-blue-400 focus:bg-gray-600"
                 />
               </div>
-              <div className="form-group">
-                <label>아이콘 URL *</label>
+              <div>
+                <label className="block mb-2 text-gray-300 text-sm font-semibold">아이콘 URL *</label>
                 <input
                   type="text"
                   placeholder="https://cdn.simpleicons.org/..."
                   defaultValue={editingGroupData?.icon}
+                  className="w-full px-4 py-3 border border-gray-600 rounded-lg text-base text-gray-200 bg-gray-700 transition-colors focus:outline-none focus:border-blue-400 focus:bg-gray-600"
                 />
                 {editingGroupData && (
-                  <div className="icon-preview-box">
-                    <img src={editingGroupData.icon} alt="preview" />
+                  <div className="mt-3 p-3 bg-gray-700 rounded-lg flex items-center justify-center">
+                    <img src={editingGroupData.icon} alt="preview" className="w-10 h-10" />
                   </div>
                 )}
               </div>
             </div>
-            <div className="modal-footer">
-              <button className="btn-secondary" onClick={() => setShowGroupModal(false)}>
+            <div className="flex gap-3 p-6 border-t border-gray-700">
+              <button
+                className="flex-1 py-3 bg-gray-700 text-gray-200 rounded-lg font-semibold hover:bg-gray-600 transition-colors"
+                onClick={() => setShowGroupModal(false)}
+              >
                 취소
               </button>
-              <button className="btn-primary" onClick={handleGroupSubmit}>
+              <button
+                className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                onClick={handleGroupSubmit}
+              >
                 {editingGroupData ? '수정' : '추가'}
               </button>
             </div>
@@ -249,18 +296,24 @@ export default function CategoryManagement() {
 
       {/* 카테고리 모달 */}
       {showCategoryModal && (
-        <div className="modal-overlay" onClick={() => setShowCategoryModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>{editingCategoryData ? '카테고리 수정' : '카테고리 추가'}</h2>
-              <button className="modal-close" onClick={() => setShowCategoryModal(false)}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowCategoryModal(false)}>
+          <div className="bg-gray-800 rounded-lg shadow-2xl w-full max-w-md border border-gray-700" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center p-6 border-b border-gray-700">
+              <h2 className="text-xl font-semibold text-gray-50 m-0">{editingCategoryData ? '카테고리 수정' : '카테고리 추가'}</h2>
+              <button
+                className="text-gray-400 hover:text-gray-200 text-3xl leading-none transition-colors"
+                onClick={() => setShowCategoryModal(false)}
+              >
                 ×
               </button>
             </div>
-            <div className="modal-body">
-              <div className="form-group">
-                <label>그룹 *</label>
-                <select defaultValue={editingCategoryData?.groupKey || selectedGroup}>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block mb-2 text-gray-300 text-sm font-semibold">그룹 *</label>
+                <select
+                  defaultValue={editingCategoryData?.groupKey || selectedGroup}
+                  className="w-full px-4 py-3 border border-gray-600 rounded-lg text-base text-gray-200 bg-gray-700 transition-colors focus:outline-none focus:border-blue-400 focus:bg-gray-600"
+                >
                   {groups.map((group) => (
                     <option key={group.groupKey} value={group.groupKey}>
                       {group.groupLabel}
@@ -268,42 +321,51 @@ export default function CategoryManagement() {
                   ))}
                 </select>
               </div>
-              <div className="form-group">
-                <label>카테고리 키 *</label>
+              <div>
+                <label className="block mb-2 text-gray-300 text-sm font-semibold">카테고리 키 *</label>
                 <input
                   type="text"
                   placeholder="예: nextjs"
                   defaultValue={editingCategoryData?.key}
+                  className="w-full px-4 py-3 border border-gray-600 rounded-lg text-base text-gray-200 bg-gray-700 transition-colors focus:outline-none focus:border-blue-400 focus:bg-gray-600"
                 />
-                <span className="form-hint">영문 소문자로 입력하세요</span>
+                <span className="text-gray-500 text-xs mt-1 block">영문 소문자로 입력하세요</span>
               </div>
-              <div className="form-group">
-                <label>카테고리명 *</label>
+              <div>
+                <label className="block mb-2 text-gray-300 text-sm font-semibold">카테고리명 *</label>
                 <input
                   type="text"
                   placeholder="예: Next.js"
                   defaultValue={editingCategoryData?.label}
+                  className="w-full px-4 py-3 border border-gray-600 rounded-lg text-base text-gray-200 bg-gray-700 transition-colors focus:outline-none focus:border-blue-400 focus:bg-gray-600"
                 />
               </div>
-              <div className="form-group">
-                <label>아이콘 URL *</label>
+              <div>
+                <label className="block mb-2 text-gray-300 text-sm font-semibold">아이콘 URL *</label>
                 <input
                   type="text"
                   placeholder="https://cdn.simpleicons.org/..."
                   defaultValue={editingCategoryData?.icon}
+                  className="w-full px-4 py-3 border border-gray-600 rounded-lg text-base text-gray-200 bg-gray-700 transition-colors focus:outline-none focus:border-blue-400 focus:bg-gray-600"
                 />
                 {editingCategoryData && (
-                  <div className="icon-preview-box">
-                    <img src={editingCategoryData.icon} alt="preview" />
+                  <div className="mt-3 p-3 bg-gray-700 rounded-lg flex items-center justify-center">
+                    <img src={editingCategoryData.icon} alt="preview" className="w-10 h-10" />
                   </div>
                 )}
               </div>
             </div>
-            <div className="modal-footer">
-              <button className="btn-secondary" onClick={() => setShowCategoryModal(false)}>
+            <div className="flex gap-3 p-6 border-t border-gray-700">
+              <button
+                className="flex-1 py-3 bg-gray-700 text-gray-200 rounded-lg font-semibold hover:bg-gray-600 transition-colors"
+                onClick={() => setShowCategoryModal(false)}
+              >
                 취소
               </button>
-              <button className="btn-primary" onClick={handleCategorySubmit}>
+              <button
+                className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                onClick={handleCategorySubmit}
+              >
                 {editingCategoryData ? '수정' : '추가'}
               </button>
             </div>

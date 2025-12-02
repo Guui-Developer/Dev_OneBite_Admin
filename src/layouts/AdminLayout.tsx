@@ -1,7 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
-import './AdminLayout.css';
 
 export default function AdminLayout() {
   // 로그인 체크
@@ -12,11 +11,11 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className="admin-layout">
+    <div className="min-h-screen bg-gray-900">
       <Header />
-      <div className="admin-content">
+      <div className="flex">
         <Sidebar />
-        <main className="main-content">
+        <main className="flex-1 p-8 min-h-[calc(100vh-4rem)] bg-gray-900">
           <Outlet />
         </main>
       </div>

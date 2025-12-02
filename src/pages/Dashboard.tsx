@@ -1,5 +1,3 @@
-import './Dashboard.css';
-
 export default function Dashboard() {
   // 주요 통계
   const mainStats = [
@@ -27,22 +25,28 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="dashboard">
-      <h1 className="dashboard-title">대시보드</h1>
+    <div className="max-w-[1400px]">
+      <h1 className="mb-8 text-gray-50 text-3xl font-bold">대시보드</h1>
 
       {/* 주요 통계 카드 */}
-      <div className="stats-grid">
+      <div className="grid grid-cols-6 gap-4 mb-8">
         {mainStats.map((stat, index) => (
-          <div key={index} className="stat-card" style={{ borderLeftColor: stat.color }}>
-            <div className="stat-icon" style={{ color: stat.color }}>
+          <div
+            key={index}
+            className="bg-gray-800 p-4 rounded-lg flex items-center gap-3 shadow-lg border border-gray-700 transition-all hover:-translate-y-1 hover:shadow-2xl min-h-[100px]"
+            style={{ borderLeftWidth: '4px', borderLeftColor: stat.color }}
+          >
+            <div className="text-3xl shrink-0" style={{ color: stat.color }}>
               {stat.icon}
             </div>
-            <div className="stat-info">
-              <h3>{stat.title}</h3>
-              <div className="stat-value-container">
-                <p className="stat-value">{stat.value}</p>
+            <div className="flex-1">
+              <h3 className="m-0 mb-2 text-gray-400 text-sm font-medium">{stat.title}</h3>
+              <div className="flex items-center gap-3">
+                <p className="m-0 text-2xl font-bold text-gray-50">{stat.value}</p>
                 {stat.trend && (
-                  <span className="stat-trend positive">{stat.trend}</span>
+                  <span className="text-sm font-semibold px-2 py-1 rounded bg-green-500/20 text-green-400">
+                    {stat.trend}
+                  </span>
                 )}
               </div>
             </div>
@@ -50,25 +54,28 @@ export default function Dashboard() {
         ))}
       </div>
 
-      <div className="dashboard-content">
+      <div className="grid grid-cols-2 gap-6">
         {/* 콘텐츠 타입별 통계 */}
-        <div className="content-card content-types-card">
-          <h2>콘텐츠 타입별 통계</h2>
-          <div className="content-types-list">
+        <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
+          <h2 className="m-0 mb-6 text-gray-50 text-xl font-semibold">콘텐츠 타입별 통계</h2>
+          <div className="flex flex-col gap-3">
             {contentStats.map((content, index) => (
-              <div key={index} className="content-type-item">
-                <div className="content-type-header">
-                  <span className="content-type-icon" style={{ color: content.color }}>
+              <div
+                key={index}
+                className="flex justify-between items-center px-4 py-3 bg-gray-700 rounded-md hover:bg-gray-600 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-xl" style={{ color: content.color }}>
                     {content.icon}
                   </span>
-                  <span className="content-type-name">{content.type}</span>
+                  <span className="text-gray-200 text-base font-medium">{content.type}</span>
                 </div>
-                <span className="content-type-count">{content.count}</span>
+                <span className="text-gray-50 text-lg font-bold">{content.count}</span>
               </div>
             ))}
-            <div className="content-type-total">
+            <div className="flex justify-between items-center px-4 py-3 mt-2 bg-gray-600 rounded-md border-t-2 border-blue-500 font-semibold text-gray-50">
               <span>전체</span>
-              <span className="total-count">
+              <span className="text-2xl text-blue-400">
                 {contentStats.reduce((sum, item) => sum + item.count, 0)}
               </span>
             </div>
@@ -76,16 +83,20 @@ export default function Dashboard() {
         </div>
 
         {/* 시스템 상태 */}
-        <div className="content-card">
-          <h2>시스템 상태</h2>
-          <div className="status-list">
+        <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
+          <h2 className="m-0 mb-6 text-gray-50 text-xl font-semibold">시스템 상태</h2>
+          <div className="flex flex-col gap-4">
             {systemStatus.map((item, index) => (
-              <div key={index} className="status-item">
-                <div className="status-info">
-                  <span className="status-name">{item.name}</span>
-                  <span className="status-detail">{item.value}</span>
+              <div key={index} className="flex justify-between items-center px-4 py-4 bg-gray-700 rounded-md">
+                <div className="flex flex-col gap-1">
+                  <span className="text-gray-200 text-base font-medium">{item.name}</span>
+                  <span className="text-gray-400 text-sm">{item.value}</span>
                 </div>
-                <span className={`status-badge status-${item.statusType}`}>
+                <span className={`px-3 py-1 rounded-xl text-sm font-semibold ${
+                  item.statusType === 'success' ? 'bg-green-500/20 text-green-400' :
+                  item.statusType === 'warning' ? 'bg-yellow-500/20 text-yellow-400' :
+                  'bg-red-500/20 text-red-400'
+                }`}>
                   {item.status}
                 </span>
               </div>

@@ -1,5 +1,4 @@
 import { NavLink } from 'react-router-dom';
-import './Sidebar.css';
 
 export default function Sidebar() {
   const menuItems = [
@@ -10,18 +9,29 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="sidebar">
-      <nav className="sidebar-nav">
+    <aside className="w-64 bg-gray-800 border-r border-gray-700 h-[calc(100vh-4rem)] sticky top-16 overflow-y-auto flex flex-col">
+      <div className="flex items-center gap-3 px-6 py-6 border-b border-gray-700">
+        <img src="/logo.svg" alt="Dev OneBite" className="w-8 h-8 object-contain" />
+        <div className="text-xl font-bold font-sans flex items-center gap-1">
+          <span className="text-gray-50">개발</span>
+          <span className="text-[#00D9FF]">한입</span>
+        </div>
+      </div>
+      <nav className="py-4 flex-1">
         {menuItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
             end={item.path === '/admin'}
             className={({ isActive }) =>
-              `sidebar-link ${isActive ? 'active' : ''}`
+              `flex items-center gap-3 px-6 py-3.5 text-gray-400 no-underline transition-all border-l-3 ${
+                isActive
+                  ? 'bg-blue-500/10 text-blue-400 border-l-blue-400 font-semibold'
+                  : 'border-l-transparent hover:bg-gray-700 hover:text-blue-400'
+              }`
             }
           >
-            <span className="sidebar-icon">{item.icon}</span>
+            <span className="text-xl">{item.icon}</span>
             <span>{item.label}</span>
           </NavLink>
         ))}
