@@ -1,74 +1,95 @@
 import './Dashboard.css';
 
 export default function Dashboard() {
-  const stats = [
-    { title: '총 사용자', value: '1,234', icon: '👥', color: '#667eea' },
-    { title: '오늘 방문자', value: '567', icon: '📈', color: '#48bb78' },
-    { title: '총 콘텐츠', value: '89', icon: '📝', color: '#ed8936' },
-    { title: '신규 문의', value: '12', icon: '💬', color: '#f56565' },
+  // 주요 통계
+  const mainStats = [
+    { title: 'Google Play 다운로드', value: '12,345', icon: '🤖', color: '#48bb78', trend: '+12%' },
+    { title: 'App Store 다운로드', value: '8,901', icon: '🍎', color: '#667eea', trend: '+8%' },
+    { title: '오늘 방문자', value: '567', icon: '📈', color: '#f59e0b', trend: '+24%' },
+    { title: '총 방문자', value: '45,234', icon: '👥', color: '#8b5cf6', trend: '' },
+    { title: '총 콘텐츠', value: '289', icon: '📝', color: '#ec4899', trend: '' },
+    { title: '오늘 신규 콘텐츠', value: '8', icon: '✨', color: '#10b981', trend: '' },
+  ];
+
+  // 콘텐츠 타입별 통계
+  const contentStats = [
+    { type: '코드 팁', count: 89, icon: '💡', color: '#3b82f6' },
+    { type: '버그 챌린지', count: 45, icon: '🐛', color: '#ef4444' },
+    { type: '코드 리뷰', count: 67, icon: '🔍', color: '#8b5cf6' },
+    { type: '면접 질문', count: 52, icon: '💬', color: '#f59e0b' },
+    { type: '밈', count: 36, icon: '😄', color: '#ec4899' },
+  ];
+
+  // 시스템 상태
+  const systemStatus = [
+    { name: '서버 상태', status: '정상', value: 'Running', statusType: 'success' },
+    { name: 'API 응답시간', status: '양호', value: '45ms', statusType: 'success' },
   ];
 
   return (
     <div className="dashboard">
       <h1 className="dashboard-title">대시보드</h1>
 
+      {/* 주요 통계 카드 */}
       <div className="stats-grid">
-        {stats.map((stat, index) => (
+        {mainStats.map((stat, index) => (
           <div key={index} className="stat-card" style={{ borderLeftColor: stat.color }}>
             <div className="stat-icon" style={{ color: stat.color }}>
               {stat.icon}
             </div>
             <div className="stat-info">
               <h3>{stat.title}</h3>
-              <p className="stat-value">{stat.value}</p>
+              <div className="stat-value-container">
+                <p className="stat-value">{stat.value}</p>
+                {stat.trend && (
+                  <span className="stat-trend positive">{stat.trend}</span>
+                )}
+              </div>
             </div>
           </div>
         ))}
       </div>
 
       <div className="dashboard-content">
-        <div className="content-card">
-          <h2>최근 활동</h2>
-          <div className="activity-list">
-            <div className="activity-item">
-              <span className="activity-icon">👤</span>
-              <div className="activity-info">
-                <p className="activity-text">새로운 사용자가 가입했습니다</p>
-                <span className="activity-time">5분 전</span>
+        {/* 콘텐츠 타입별 통계 */}
+        <div className="content-card content-types-card">
+          <h2>콘텐츠 타입별 통계</h2>
+          <div className="content-types-list">
+            {contentStats.map((content, index) => (
+              <div key={index} className="content-type-item">
+                <div className="content-type-header">
+                  <span className="content-type-icon" style={{ color: content.color }}>
+                    {content.icon}
+                  </span>
+                  <span className="content-type-name">{content.type}</span>
+                </div>
+                <span className="content-type-count">{content.count}</span>
               </div>
-            </div>
-            <div className="activity-item">
-              <span className="activity-icon">📝</span>
-              <div className="activity-info">
-                <p className="activity-text">새로운 콘텐츠가 등록되었습니다</p>
-                <span className="activity-time">1시간 전</span>
-              </div>
-            </div>
-            <div className="activity-item">
-              <span className="activity-icon">💬</span>
-              <div className="activity-info">
-                <p className="activity-text">새로운 문의가 접수되었습니다</p>
-                <span className="activity-time">2시간 전</span>
-              </div>
+            ))}
+            <div className="content-type-total">
+              <span>전체</span>
+              <span className="total-count">
+                {contentStats.reduce((sum, item) => sum + item.count, 0)}
+              </span>
             </div>
           </div>
         </div>
 
+        {/* 시스템 상태 */}
         <div className="content-card">
           <h2>시스템 상태</h2>
           <div className="status-list">
-            <div className="status-item">
-              <span>서버 상태</span>
-              <span className="status-badge status-success">정상</span>
-            </div>
-            <div className="status-item">
-              <span>데이터베이스</span>
-              <span className="status-badge status-success">정상</span>
-            </div>
-            <div className="status-item">
-              <span>API 응답시간</span>
-              <span className="status-badge status-success">45ms</span>
-            </div>
+            {systemStatus.map((item, index) => (
+              <div key={index} className="status-item">
+                <div className="status-info">
+                  <span className="status-name">{item.name}</span>
+                  <span className="status-detail">{item.value}</span>
+                </div>
+                <span className={`status-badge status-${item.statusType}`}>
+                  {item.status}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

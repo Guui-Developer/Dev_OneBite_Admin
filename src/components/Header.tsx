@@ -12,7 +12,14 @@ export default function Header() {
   return (
     <header className="admin-header">
       <div className="header-content">
-        <h1>Dev OneBite Admin</h1>
+        <div className="header-logo">
+          <img src="/logo.svg" alt="Dev OneBite" className="logo-icon" />
+          <h1 className="logo-text">
+            <span className="logo-dev">개발</span>
+            <span className="logo-onebite">한입</span>
+            <span className="logo-onebite-admin">어드민[DEV]</span>
+          </h1>
+        </div>
         <div className="header-actions">
           <span className="admin-name">관리자</span>
           <button onClick={handleLogout} className="logout-button">
