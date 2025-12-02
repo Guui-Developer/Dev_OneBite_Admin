@@ -15,8 +15,8 @@ export default function Header() {
           <img src="/logo.svg" alt="Dev OneBite" className="w-10 h-10 object-contain" />
           <h1 className="m-0 text-2xl font-bold font-sans flex items-center gap-1">
             <span className="text-gray-50">개발</span>
-            <span className="text-[#00D9FF]">한입</span>
-            <span className="text-[#df5d5d] text-[2rem]">어드민[DEV]</span>
+            <span className="text-[#00D9FF]">한입 Admin</span>
+            <span className="text-[#df5d5d] text-[2rem]">[DEV]</span>
           </h1>
         </div>
         <div className="flex items-center gap-4">

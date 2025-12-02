@@ -1,124 +1,39 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { MouseEvent, ChangeEvent } from 'react';
 import { Plus, Edit2, Trash2, Eye, X } from 'lucide-react';
-import CodeBox from '../components/CodeBox';
-import MarkdownBox from '../components/MarkdownBox';
 import Card from '../components/Card';
-
-interface ContentItem {
-  id: number;
-  type: 'code_tip' | 'bug_challenge' | 'code_review' | 'meme' | 'interview';
-  title: string;
-  tags: string[];
-  createdAt: string;
-  // Type-specific fields
-  code?: string;
-  language?: string;
-  description?: string;
-  answer?: string;
-  before?: string;
-  after?: string;
-  feedback?: string;
-  image?: string;
-  question?: string;
-  tail?: string;
-}
-
-interface Group {
-  groupKey: string;
-  groupLabel: string;
-  icon: string;
-}
-
-interface Category {
-  key: string;
-  label: string;
-  groupKey: string;
-  icon: string;
-}
-
-// 그룹 데이터
-const GROUPS: Group[] = [
-  { groupKey: 'common', groupLabel: '공통', icon: 'https://cdn.simpleicons.org/files/gray' },
-  { groupKey: 'language', groupLabel: '언어', icon: 'https://cdn.simpleicons.org/files/red' },
-  { groupKey: 'frontend', groupLabel: '프론트엔드', icon: 'https://cdn.simpleicons.org/html5/E34F26' },
-  { groupKey: 'backend', groupLabel: '백엔드', icon: 'https://cdn.simpleicons.org/nodedotjs/339933' },
-  { groupKey: 'database', groupLabel: '데이터베이스', icon: 'https://cdn.simpleicons.org/files/green' },
-  { groupKey: 'cloud', groupLabel: '클라우드', icon: 'https://cdn.simpleicons.org/icloud/gray' },
-];
-
-// 카테고리 데이터
-const AVAILABLE_CATEGORIES: Category[] = [
-  { key: 'git', label: 'Git', groupKey: 'common', icon: 'https://cdn.simpleicons.org/git/F05032' },
-  { key: 'docker', label: 'Docker', groupKey: 'common', icon: 'https://cdn.simpleicons.org/docker/2496ED' },
-  { key: 'linux', label: 'Linux', groupKey: 'common', icon: 'https://cdn.simpleicons.org/linux/FCC624' },
-  { key: 'javascript', label: 'JavaScript', groupKey: 'language', icon: 'https://cdn.simpleicons.org/javascript/F7DF1E' },
-  { key: 'typescript', label: 'TypeScript', groupKey: 'language', icon: 'https://cdn.simpleicons.org/typescript/3178C6' },
-  { key: 'python', label: 'Python', groupKey: 'language', icon: 'https://cdn.simpleicons.org/python/3776AB' },
-  { key: 'react', label: 'React', groupKey: 'frontend', icon: 'https://cdn.simpleicons.org/react/61DAFB' },
-  { key: 'vue', label: 'Vue', groupKey: 'frontend', icon: 'https://cdn.simpleicons.org/vuedotjs/4FC08D' },
-  { key: 'spring', label: 'Spring', groupKey: 'backend', icon: 'https://cdn.simpleicons.org/spring/6DB33F' },
-  { key: 'nodejs', label: 'Node.js', groupKey: 'backend', icon: 'https://cdn.simpleicons.org/nodedotjs/339933' },
-];
+import {
+  CodeTipContent,
+  BugChallengeContent,
+  CodeReviewContent,
+  MemeContent,
+  InterviewContent
+} from '../components/content';
+import { useContentStore } from '@/store/contentStore';
+import { useCategoryStore } from '@/store/categoryStore';
+import type { LearningData } from '@/api/model/response/content_types';
 
 export default function ContentSettings() {
+  const { data: contentData, isLoading, fetchContents, deleteContent } = useContentStore();
+  const { data: categoryData, fetchCategories } = useCategoryStore();
+
+  useEffect(() => {
+    fetchContents();
+    fetchCategories();
+  }, [fetchContents, fetchCategories]);
+
+  const GROUPS = categoryData?.groups || [];
+  const AVAILABLE_CATEGORIES = GROUPS.flatMap(g =>
+    g.categories.map(c => ({ ...c, groupKey: g.groupKey }))
+  );
+
   const [activeTab, setActiveTab] = useState<string>('all');
-  const [contents] = useState<ContentItem[]>([
-    {
-      id: 1,
-      type: 'code_tip',
-      title: '💡 옵셔널 체이닝',
-      tags: ['javascript', 'typescript'],
-      createdAt: '2024-11-25',
-      code: 'const user = { name: "John", address: { city: "Seoul" } };\n// 옵셔널 체이닝 사용\nconst city = user?.address?.city;\nconsole.log(city); // "Seoul"',
-      language: 'javascript',
-      description: '옵셔널 체이닝(?.)을 사용하면 중첩된 객체의 속성에 안전하게 접근할 수 있습니다.'
-    },
-    {
-      id: 2,
-      type: 'bug_challenge',
-      title: '🐛 클로저 함정',
-      tags: ['javascript'],
-      createdAt: '2024-11-25',
-      code: 'for (var i = 0; i < 3; i++) {\n  setTimeout(() => console.log(i), 100);\n}',
-      answer: 'var는 함수 스코프를 가지므로 모든 setTimeout이 같은 i를 참조합니다. let을 사용하거나 IIFE를 사용하여 해결할 수 있습니다.'
-    },
-    {
-      id: 3,
-      type: 'interview',
-      title: '🎯 호이스팅이란?',
-      tags: ['javascript'],
-      createdAt: '2024-11-25',
-      question: '자바스크립트의 호이스팅(Hoisting)에 대해 설명해주세요.',
-      answer: '호이스팅은 변수와 함수 선언이 해당 스코프의 최상단으로 끌어올려지는 자바스크립트의 동작입니다. var로 선언된 변수는 undefined로 초기화되어 호이스팅되고, let과 const는 TDZ(Temporal Dead Zone)에 있어 초기화 전에는 접근할 수 없습니다.',
-      tail: '호이스팅과 TDZ의 차이점은 무엇인가요?'
-    },
-    {
-      id: 4,
-      type: 'code_review',
-      title: '👨‍💻 불필요한 삼항연산자',
-      tags: ['javascript', 'react'],
-      createdAt: '2024-11-25',
-      before: 'const isActive = user.status === "active" ? true : false;',
-      after: 'const isActive = user.status === "active";',
-      feedback: '비교 연산자는 이미 boolean 값을 반환하므로 삼항 연산자가 불필요합니다.'
-    },
-    {
-      id: 5,
-      type: 'meme',
-      title: '😂 세미콜론 논쟁',
-      tags: ['javascript'],
-      createdAt: '2024-11-25',
-      image: 'https://via.placeholder.com/400x300',
-      description: '자바스크립트 개발자들 사이의 영원한 논쟁...'
-    },
-  ]);
 
   const [showModal, setShowModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
-  const [editingContent, setEditingContent] = useState<ContentItem | null>(null);
-  const [viewingContent, setViewingContent] = useState<ContentItem | null>(null);
-  const [selectedType, setSelectedType] = useState<string>('code_tip');
+  const [editingContent, setEditingContent] = useState<LearningData | null>(null);
+  const [viewingContent, setViewingContent] = useState<LearningData | null>(null);
+  const [formSelectedType, setFormSelectedType] = useState<string>('code_tip');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const tabs = [
@@ -130,38 +45,39 @@ export default function ContentSettings() {
     { key: 'meme', label: '밈' },
   ];
 
+  const contents = contentData?.content || [];
   const filteredContents = activeTab === 'all'
     ? contents
     : contents.filter(c => c.type === activeTab);
 
   const handleAdd = () => {
     setEditingContent(null);
-    setSelectedType('code_tip');
+    setFormSelectedType('code_tip');
     setSelectedTags([]);
     setShowModal(true);
   };
 
-  const handleView = (content: ContentItem) => {
+  const handleView = (content: LearningData) => {
     setViewingContent(content);
     setShowViewModal(true);
   };
 
-  const handleEdit = (content: ContentItem) => {
+  const handleEdit = (content: LearningData) => {
     setEditingContent(content);
-    setSelectedType(content.type);
+    setFormSelectedType(content.type);
     setSelectedTags(content.tags);
     setShowModal(true);
   };
 
   const handleDelete = (id: number) => {
     if (confirm(`ID ${id} 콘텐츠를 삭제하시겠습니까?`)) {
-      console.log('Delete content:', id);
+      deleteContent(id);
     }
   };
 
   const handleSubmit = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    console.log('Submit:', { type: selectedType, tags: selectedTags });
+    console.log('Submit:', { type: formSelectedType, tags: selectedTags });
     setShowModal(false);
   };
 
@@ -174,107 +90,102 @@ export default function ContentSettings() {
   };
 
   const handleTypeChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    setSelectedType(e.target.value);
+    setFormSelectedType(e.target.value);
   };
 
-  const renderViewContent = (content: ContentItem) => {
+  const renderViewContent = (content: LearningData) => {
     switch (content.type) {
       case 'code_tip':
+        if (!content.code || !content.description) {
+          return <div className="text-center py-8"><p className="text-gray-500 italic">상세 내용이 없습니다.</p></div>;
+        }
         return (
-          <div className="space-y-4">
-            {content.code && (
-              <CodeBox code={content.code} language={content.language} title="Code" />
-            )}
-            {content.description && (
-              <MarkdownBox content={content.description} />
-            )}
-          </div>
+          <CodeTipContent
+            content={{
+              type: 'code_tip',
+              id: content.id,
+              code: content.code,
+              language: content.language || 'javascript',
+              description: content.description,
+              title: content.title,
+              tags: content.tags,
+              createdAt: content.createdAt
+            }}
+          />
         );
 
       case 'bug_challenge':
+        if (!content.code || !content.answer) {
+          return <div className="text-center py-8"><p className="text-gray-500 italic">상세 내용이 없습니다.</p></div>;
+        }
         return (
-          <div className="space-y-4">
-            {content.code && (
-              <div>
-                <h3 className="text-sm font-semibold text-[#B0B0B0] mb-2">문제 코드</h3>
-                <CodeBox code={content.code} />
-              </div>
-            )}
-            {content.answer && (
-              <div>
-                <h3 className="text-sm font-semibold text-[#B0B0B0] mb-2">해답</h3>
-                <MarkdownBox content={content.answer} />
-              </div>
-            )}
-          </div>
+          <BugChallengeContent
+            content={{
+              type: 'bug_challenge',
+              id: content.id,
+              code: content.code,
+              answer: content.answer,
+              title: content.title,
+              tags: content.tags,
+              createdAt: content.createdAt
+            }}
+          />
         );
 
       case 'code_review':
+        if (!content.before || !content.after || !content.feedback) {
+          return <div className="text-center py-8"><p className="text-gray-500 italic">상세 내용이 없습니다.</p></div>;
+        }
         return (
-          <div className="space-y-4">
-            {content.before && (
-              <div>
-                <h3 className="text-sm font-semibold text-red-400 mb-2">❌ Before</h3>
-                <CodeBox code={content.before} />
-              </div>
-            )}
-            {content.after && (
-              <div>
-                <h3 className="text-sm font-semibold text-green-400 mb-2">✅ After</h3>
-                <CodeBox code={content.after} />
-              </div>
-            )}
-            {content.feedback && (
-              <div>
-                <h3 className="text-sm font-semibold text-[#B0B0B0] mb-2">피드백</h3>
-                <MarkdownBox content={content.feedback} />
-              </div>
-            )}
-          </div>
+          <CodeReviewContent
+            content={{
+              type: 'code_review',
+              id: content.id,
+              before: content.before,
+              after: content.after,
+              feedback: content.feedback,
+              title: content.title,
+              tags: content.tags,
+              createdAt: content.createdAt
+            }}
+          />
         );
 
       case 'interview':
+        if (!content.question || !content.answer) {
+          return <div className="text-center py-8"><p className="text-gray-500 italic">상세 내용이 없습니다.</p></div>;
+        }
         return (
-          <div className="space-y-4">
-            {content.question && (
-              <div className="bg-[#00D9FF]/10 p-4 rounded-lg border border-[#00D9FF]/30">
-                <h3 className="text-sm font-semibold text-[#00D9FF] mb-2">질문</h3>
-                <p className="text-white text-sm">{content.question}</p>
-              </div>
-            )}
-            {content.answer && (
-              <div>
-                <h3 className="text-sm font-semibold text-[#B0B0B0] mb-2">답변</h3>
-                <MarkdownBox content={content.answer} />
-              </div>
-            )}
-            {content.tail && (
-              <div className="bg-[#2D2D2D] p-3 rounded-lg border border-[#444]">
-                <p className="text-sm text-[#B0B0B0]">{content.tail}</p>
-              </div>
-            )}
-          </div>
+          <InterviewContent
+            content={{
+              type: 'interview',
+              id: content.id,
+              question: content.question,
+              answer: content.answer,
+              tails: content.tails || [],
+              title: content.title,
+              tags: content.tags,
+              createdAt: content.createdAt
+            }}
+          />
         );
 
       case 'meme':
+        if (!content.image || !content.description) {
+          return <div className="text-center py-8"><p className="text-gray-500 italic">상세 내용이 없습니다.</p></div>;
+        }
         return (
-          <div className="space-y-4">
-            {content.image && (
-              <div className="flex justify-center">
-                <img
-                  src={content.image}
-                  alt={content.title}
-                  className="max-w-full h-auto rounded-lg"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
-              </div>
-            )}
-            {content.description && (
-              <MarkdownBox content={content.description} />
-            )}
-          </div>
+          <MemeContent
+            content={{
+              type: 'meme',
+              id: content.id,
+              image: content.image,
+              description: content.description,
+              title: content.title,
+              tags: content.tags,
+              createdAt: content.createdAt
+            }}
+          />
         );
 
       default:
@@ -291,7 +202,7 @@ export default function ContentSettings() {
     const textareaClass = "w-full px-4 py-3 border border-gray-600 rounded-lg text-base text-gray-200 bg-gray-700 transition-colors focus:outline-none focus:border-blue-400 focus:bg-gray-600 font-mono";
     const labelClass = "block mb-2 text-gray-300 text-sm font-semibold";
 
-    switch (selectedType) {
+    switch (formSelectedType) {
       case 'code_tip':
         return (
           <>
@@ -432,6 +343,14 @@ export default function ContentSettings() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="max-w-[1400px] flex items-center justify-center py-20">
+        <div className="text-gray-400 text-lg">로딩 중...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-[1400px]">
       <div className="flex justify-between items-center mb-8">
@@ -448,10 +367,10 @@ export default function ContentSettings() {
         {tabs.map((tab) => (
           <button
             key={tab.key}
-            className={`px-6 py-3 border-b-2 border-transparent text-gray-400 text-base font-medium cursor-pointer transition-all -mb-0.5 ${
+            className={`px-6 py-3 border-b-2 text-base font-medium cursor-pointer transition-all -mb-0.5 ${
               activeTab === tab.key
                 ? 'text-blue-400 border-blue-400'
-                : 'hover:text-blue-400 hover:bg-gray-700'
+                : 'text-gray-400 border-transparent hover:text-blue-400 hover:bg-gray-700'
             }`}
             onClick={() => setActiveTab(tab.key)}
           >
@@ -539,7 +458,7 @@ export default function ContentSettings() {
               <div>
                 <label className="block mb-2 text-gray-300 text-sm font-semibold">타입 *</label>
                 <select
-                  value={selectedType}
+                  value={formSelectedType}
                   onChange={handleTypeChange}
                   className="w-full px-4 py-3 border border-gray-600 rounded-lg text-base text-gray-200 bg-gray-700 transition-colors focus:outline-none focus:border-blue-400 focus:bg-gray-600"
                 >
@@ -636,11 +555,11 @@ export default function ContentSettings() {
       {/* 콘텐츠 보기 모달 - 실제 클라이언트 스타일 */}
       {showViewModal && viewingContent && (
         <div
-          className="fixed inset-0 bg-black/75 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/75 flex items-center justify-center z-50"
           onClick={() => setShowViewModal(false)}
         >
           <div
-            className="bg-[#0A0A0A] w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-lg"
+            className="bg-[#0A0A0A] w-[500px] max-h-[90vh] overflow-y-auto rounded-lg"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}

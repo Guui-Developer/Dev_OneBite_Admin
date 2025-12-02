@@ -1,50 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { MouseEvent } from 'react';
 import { Plus, Edit2, Trash2 } from 'lucide-react';
+import { useCategoryStore } from '@/store/categoryStore';
 
 // Alias for compatibility
 const FiPlus = Plus;
 const FiEdit2 = Edit2;
 const FiTrash2 = Trash2;
 
-interface Group {
-  groupKey: string;
-  groupLabel: string;
-  icon: string;
-}
-
-interface Category {
-  key: string;
-  label: string;
-  groupKey: string;
-  icon: string;
-  count: number;
-}
-
 export default function CategoryManagement() {
-  const [groups, setGroups] = useState<Group[]>([
-    { groupKey: 'common', groupLabel: '공통', icon: 'https://cdn.simpleicons.org/files/gray' },
-    { groupKey: 'language', groupLabel: '언어', icon: 'https://cdn.simpleicons.org/files/red' },
-    { groupKey: 'frontend', groupLabel: '프론트엔드', icon: 'https://cdn.simpleicons.org/html5/E34F26' },
-    { groupKey: 'backend', groupLabel: '백엔드', icon: 'https://cdn.simpleicons.org/nodedotjs/339933' },
-    { groupKey: 'database', groupLabel: '데이터베이스', icon: 'https://cdn.simpleicons.org/files/green' },
-    { groupKey: 'cloud', groupLabel: '클라우드', icon: 'https://cdn.simpleicons.org/icloud/gray' },
-  ]);
-
-  const [categories, setCategories] = useState<Category[]>([
-    { key: 'git', label: 'Git', groupKey: 'common', icon: 'https://cdn.simpleicons.org/git/F05032', count: 45 },
-    { key: 'docker', label: 'Docker', groupKey: 'common', icon: 'https://cdn.simpleicons.org/docker/2496ED', count: 38 },
-    { key: 'linux', label: 'Linux', groupKey: 'common', icon: 'https://cdn.simpleicons.org/linux/FCC624', count: 52 },
-    { key: 'javascript', label: 'JavaScript', groupKey: 'language', icon: 'https://cdn.simpleicons.org/javascript/F7DF1E', count: 67 },
-    { key: 'typescript', label: 'TypeScript', groupKey: 'language', icon: 'https://cdn.simpleicons.org/typescript/3178C6', count: 54 },
-    { key: 'python', label: 'Python', groupKey: 'language', icon: 'https://cdn.simpleicons.org/python/3776AB', count: 58 },
-    { key: 'react', label: 'React', groupKey: 'frontend', icon: 'https://cdn.simpleicons.org/react/61DAFB', count: 89 },
-    { key: 'vue', label: 'Vue', groupKey: 'frontend', icon: 'https://cdn.simpleicons.org/vuedotjs/4FC08D', count: 43 },
-    { key: 'spring', label: 'Spring', groupKey: 'backend', icon: 'https://cdn.simpleicons.org/spring/6DB33F', count: 72 },
-    { key: 'nodejs', label: 'Node.js', groupKey: 'backend', icon: 'https://cdn.simpleicons.org/nodedotjs/339933', count: 64 },
-  ]);
+  const { data, isLoading, fetchCategories, deleteCategory, deleteGroup } = useCategoryStore();
 
   const [selectedGroup, setSelectedGroup] = useState<string>('common');
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  const groups = data?.groups || [];
+  const categories = groups.flatMap(g => g.categories.map(c => ({ ...c, groupKey: g.groupKey })));
   const [editingGroup, setEditingGroup] = useState<string | null>(null);
   const [editingCategory, setEditingCategory] = useState<string | null>(null);
   const [showGroupModal, setShowGroupModal] = useState(false);
@@ -65,8 +39,7 @@ export default function CategoryManagement() {
 
   const handleDeleteGroup = (groupKey: string) => {
     if (confirm(`"${groupKey}" 그룹을 삭제하시겠습니까?\n연관된 카테고리도 함께 삭제됩니다.`)) {
-      setGroups(groups.filter(g => g.groupKey !== groupKey));
-      setCategories(categories.filter(c => c.groupKey !== groupKey));
+      deleteGroup(groupKey);
       if (selectedGroup === groupKey) {
         setSelectedGroup(groups[0]?.groupKey || '');
       }
@@ -85,7 +58,7 @@ export default function CategoryManagement() {
 
   const handleDeleteCategory = (key: string) => {
     if (confirm(`"${key}" 카테고리를 삭제하시겠습니까?`)) {
-      setCategories(categories.filter(c => c.key !== key));
+      deleteCategory(key);
     }
   };
 
@@ -106,6 +79,14 @@ export default function CategoryManagement() {
   const editingGroupData = editingGroup ? groups.find(g => g.groupKey === editingGroup) : null;
   const editingCategoryData = editingCategory ? categories.find(c => c.key === editingCategory) : null;
 
+  if (isLoading) {
+    return (
+      <div className="max-w-[1400px] flex items-center justify-center py-20">
+        <div className="text-gray-400 text-lg">로딩 중...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-[1400px]">
       <div className="mb-8 flex justify-between items-center">
@@ -113,13 +94,13 @@ export default function CategoryManagement() {
         <div className="flex items-center gap-3 text-gray-400">
           <span>{groups.length}개 그룹</span>
           <span>•</span>
-          <span>{categories.length}개 카테고리</span>
+          <span>{data?.totalCategories || 0}개 카테고리</span>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="flex gap-6">
         {/* 좌측: 그룹 목록 */}
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
+        <div className="flex-grow-[1] bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold text-gray-50 m-0">그룹</h2>
             <button
@@ -148,7 +129,7 @@ export default function CategoryManagement() {
                     <span className="text-gray-400 text-sm">{group.groupKey}</span>
                   </div>
                   <span className="px-3 py-1 bg-gray-800 rounded-full text-gray-300 text-sm font-semibold">
-                    {categories.filter(c => c.groupKey === group.groupKey).length}
+                    {group.categories.length}
                   </span>
                 </div>
                 <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
@@ -173,7 +154,7 @@ export default function CategoryManagement() {
         </div>
 
         {/* 우측: 카테고리 목록 */}
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
+        <div className="flex-grow-[2] bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold text-gray-50 m-0">{selectedGroupData?.groupLabel} 카테고리</h2>
             <button
