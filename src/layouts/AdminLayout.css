@@ -1,6 +1,6 @@
 .admin-layout {
   min-height: 100vh;
-  background: #f9fafb;
+  background: #111827;
 }
 
 .admin-content {
@@ -11,4 +11,5 @@
   flex: 1;
   padding: 2rem;
   overflow-x: auto;
+  background: #111827;
 }
