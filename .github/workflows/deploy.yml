@@ -1,0 +1,91 @@
+﻿name: Build & Deploy DevOneBite_Admin
+
+on:
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: "Deploy Stage"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - prod
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+
+    steps:
+      # 1) 소스 + 서브모듈(LFS 포함) 체크아웃
+      - name: Checkout code + submodules
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.client_branch }}
+          fetch-depth: 0
+          submodules: recursive
+          lfs: true
+
+      # 2) Node.js 설치
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
+
+      # 3) 의존성 설치
+      - name: Install dependencies
+        run: npm install
+
+      # 4) env생성
+      - name: Generate .env file
+        run: |
+          if [ "${{ inputs.stage }}" = "prod" ]; then
+            echo "VITE_API_URL=${{ secrets.VITE_API_URL_PROD }}" >> .env.production
+            echo "VITE_MODE=production" >> .env.production
+            echo "VITE_BASE_PATH=/" >> .env.production
+          else
+            echo "VITE_API_URL=${{ secrets.VITE_API_URL_DEV }}" >> .env.development
+            echo "VITE_MODE=development" >> .env.development
+            echo "VITE_BASE_PATH=/" >> .env.development
+          fi
+
+      # 5) 빌드 (루트에서)
+      - name: Build project
+        run: |
+          if [ "${{ inputs.stage }}" = "prod" ]; then
+            npm run build:prod
+          else
+            npm run build:dev
+          fi
+
+      # 6) AWS 자격증명 구성
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # 7) S3에 업로드
+      - name: Deploy to S3
+        run: |
+          cd dist
+          if [ "${{ inputs.stage }}" = "prod" ]; then
+            aws s3 sync . s3://${{ secrets.S3_BUCKET_PROD }} --delete
+          else
+            aws s3 sync . s3://${{ secrets.S3_BUCKET_DEV }} --delete
+          fi
+
+      # 8) CloudFront 캐시 무효화
+      - name: Invalidate CloudFront cache
+        run: |
+          DIST_ID=$(
+            if [ "${{ inputs.stage }}" = "prod" ]; then
+              echo ${{ secrets.DISTRIBUTION_ID_PROD }}
+            else
+              echo ${{ secrets.DISTRIBUTION_ID_DEV }}
+            fi
+          )
+          aws cloudfront create-invalidation --distribution-id $DIST_ID --paths "/*"
