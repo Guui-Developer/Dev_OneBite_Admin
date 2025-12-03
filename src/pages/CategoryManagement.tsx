@@ -24,6 +24,10 @@ export default function CategoryManagement() {
   const [showGroupModal, setShowGroupModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
 
+  // 다건 삭제를 위한 상태
+  const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+
   const selectedGroupData = groups.find(g => g.groupKey === selectedGroup);
   const filteredCategories = categories.filter(c => c.groupKey === selectedGroup);
 
@@ -76,6 +80,63 @@ export default function CategoryManagement() {
     setShowCategoryModal(false);
   };
 
+  // 그룹 체크박스 관련 핸들러
+  const handleGroupCheck = (groupKey: string) => {
+    setSelectedGroups(prev =>
+      prev.includes(groupKey)
+        ? prev.filter(k => k !== groupKey)
+        : [...prev, groupKey]
+    );
+  };
+
+  const handleGroupSelectAll = () => {
+    if (selectedGroups.length === groups.length) {
+      setSelectedGroups([]);
+    } else {
+      setSelectedGroups(groups.map(g => g.groupKey));
+    }
+  };
+
+  const handleDeleteSelectedGroups = () => {
+    if (selectedGroups.length === 0) return;
+    if (confirm(`선택한 ${selectedGroups.length}개의 그룹을 삭제하시겠습니까?\n연관된 카테고리도 함께 삭제됩니다.`)) {
+      // API 호출 예정
+      console.log('Delete groups:', selectedGroups);
+      selectedGroups.forEach(key => deleteGroup(key));
+      setSelectedGroups([]);
+      if (selectedGroups.includes(selectedGroup)) {
+        setSelectedGroup(groups[0]?.groupKey || '');
+      }
+    }
+  };
+
+  // 카테고리 체크박스 관련 핸들러
+  const handleCategoryCheck = (categoryKey: string) => {
+    setSelectedCategories(prev =>
+      prev.includes(categoryKey)
+        ? prev.filter(k => k !== categoryKey)
+        : [...prev, categoryKey]
+    );
+  };
+
+  const handleCategorySelectAll = () => {
+    if (selectedCategories.length === filteredCategories.length) {
+      setSelectedCategories([]);
+    } else {
+      setSelectedCategories(filteredCategories.map(c => c.key));
+    }
+  };
+
+  const handleDeleteSelectedCategories = () => {
+    if (selectedCategories.length === 0) return;
+    if (confirm(`선택한 ${selectedCategories.length}개의 카테고리를 삭제하시겠습니까?`)) {
+      // API 호출 예정
+      console.log('Delete categories:', selectedCategories);
+      selectedCategories.forEach(key => deleteCategory(key));
+      setSelectedCategories([]);
+    }
+  };
+
   const editingGroupData = editingGroup ? groups.find(g => g.groupKey === editingGroup) : null;
   const editingCategoryData = editingCategory ? categories.find(c => c.key === editingCategory) : null;
 
@@ -101,7 +162,7 @@ export default function CategoryManagement() {
       <div className="flex gap-6">
         {/* 좌측: 그룹 목록 */}
         <div className="flex-grow-[1] bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold text-gray-50 m-0">그룹</h2>
             <button
               className="p-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors"
@@ -111,20 +172,57 @@ export default function CategoryManagement() {
               <FiPlus />
             </button>
           </div>
+          {/* 다건 삭제 컨트롤 */}
+          <div className="flex items-center justify-between mb-4 p-3 bg-gray-700 rounded-lg border border-gray-600">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={selectedGroups.length === groups.length && groups.length > 0}
+                onChange={handleGroupSelectAll}
+                className="w-4 h-4 rounded border-gray-500 text-blue-600 focus:ring-blue-500 focus:ring-offset-gray-800"
+              />
+              <span className="text-sm text-gray-300">
+                전체 선택 {selectedGroups.length > 0 && `(${selectedGroups.length}/${groups.length})`}
+              </span>
+            </label>
+            {selectedGroups.length > 0 && (
+              <button
+                className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition-colors flex items-center gap-1"
+                onClick={handleDeleteSelectedGroups}
+              >
+                <FiTrash2 size={14} />
+                선택 삭제
+              </button>
+            )}
+          </div>
           <div className="flex flex-col gap-3">
             {groups.map((group) => (
               <div
                 key={group.groupKey}
-                className={`p-4 rounded-lg border transition-all cursor-pointer ${
+                className={`p-4 rounded-lg border transition-all ${
                   selectedGroup === group.groupKey
                     ? 'bg-blue-600/20 border-blue-500'
                     : 'bg-gray-700 border-gray-600 hover:bg-gray-600'
                 }`}
-                onClick={() => setSelectedGroup(group.groupKey)}
               >
                 <div className="flex items-center gap-3 mb-2">
-                  <img src={group.icon} alt={group.groupLabel} className="w-8 h-8" />
-                  <div className="flex-1">
+                  <input
+                    type="checkbox"
+                    checked={selectedGroups.includes(group.groupKey)}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      handleGroupCheck(group.groupKey);
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-4 h-4 rounded border-gray-500 text-blue-600 focus:ring-blue-500 focus:ring-offset-gray-800 cursor-pointer"
+                  />
+                  <img
+                    src={group.icon}
+                    alt={group.groupLabel}
+                    className="w-8 h-8 cursor-pointer"
+                    onClick={() => setSelectedGroup(group.groupKey)}
+                  />
+                  <div className="flex-1 cursor-pointer" onClick={() => setSelectedGroup(group.groupKey)}>
                     <h3 className="text-gray-50 font-semibold m-0 mb-1">{group.groupLabel}</h3>
                     <span className="text-gray-400 text-sm">{group.groupKey}</span>
                   </div>
@@ -155,7 +253,7 @@ export default function CategoryManagement() {
 
         {/* 우측: 카테고리 목록 */}
         <div className="flex-grow-[2] bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold text-gray-50 m-0">{selectedGroupData?.groupLabel} 카테고리</h2>
             <button
               className="p-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors"
@@ -165,10 +263,39 @@ export default function CategoryManagement() {
               <FiPlus />
             </button>
           </div>
+          {/* 다건 삭제 컨트롤 */}
+          <div className="flex items-center justify-between mb-4 p-3 bg-gray-700 rounded-lg border border-gray-600">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={selectedCategories.length === filteredCategories.length && filteredCategories.length > 0}
+                onChange={handleCategorySelectAll}
+                className="w-4 h-4 rounded border-gray-500 text-blue-600 focus:ring-blue-500 focus:ring-offset-gray-800"
+              />
+              <span className="text-sm text-gray-300">
+                전체 선택 {selectedCategories.length > 0 && `(${selectedCategories.length}/${filteredCategories.length})`}
+              </span>
+            </label>
+            {selectedCategories.length > 0 && (
+              <button
+                className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition-colors flex items-center gap-1"
+                onClick={handleDeleteSelectedCategories}
+              >
+                <FiTrash2 size={14} />
+                선택 삭제
+              </button>
+            )}
+          </div>
           <div className="grid grid-cols-2 gap-4">
             {filteredCategories.map((category) => (
               <div key={category.key} className="bg-gray-700 p-4 rounded-lg border border-gray-600 hover:bg-gray-600 transition-colors">
                 <div className="flex items-center gap-3 mb-3">
+                  <input
+                    type="checkbox"
+                    checked={selectedCategories.includes(category.key)}
+                    onChange={() => handleCategoryCheck(category.key)}
+                    className="w-4 h-4 rounded border-gray-500 text-blue-600 focus:ring-blue-500 focus:ring-offset-gray-800 cursor-pointer"
+                  />
                   <img src={category.icon} alt={category.label} className="w-10 h-10" />
                   <div className="flex-1">
                     <h3 className="text-gray-50 font-semibold m-0 mb-1">{category.label}</h3>

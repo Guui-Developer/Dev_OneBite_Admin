@@ -36,6 +36,13 @@ export default function ContentSettings() {
   const [formSelectedType, setFormSelectedType] = useState<string>('code_tip');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
+  // 다건 삭제를 위한 상태
+  const [selectedContents, setSelectedContents] = useState<number[]>([]);
+
+  // 필터 상태
+  const [filterCategory, setFilterCategory] = useState<string>('');
+  const [searchText, setSearchText] = useState<string>('');
+
   const tabs = [
     { key: 'all', label: '전체' },
     { key: 'code_tip', label: '코드 팁' },
@@ -46,9 +53,23 @@ export default function ContentSettings() {
   ];
 
   const contents = contentData?.content || [];
-  const filteredContents = activeTab === 'all'
+  let filteredContents = activeTab === 'all'
     ? contents
     : contents.filter(c => c.type === activeTab);
+
+  // 카테고리 필터 적용
+  if (filterCategory) {
+    filteredContents = filteredContents.filter(c => c.tags.includes(filterCategory));
+  }
+
+  // 검색 필터 적용
+  if (searchText) {
+    const lowerSearch = searchText.toLowerCase();
+    filteredContents = filteredContents.filter(c =>
+      c.title.toLowerCase().includes(lowerSearch) ||
+      c.tags.some(tag => tag.toLowerCase().includes(lowerSearch))
+    );
+  }
 
   const handleAdd = () => {
     setEditingContent(null);
@@ -91,6 +112,33 @@ export default function ContentSettings() {
 
   const handleTypeChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setFormSelectedType(e.target.value);
+  };
+
+  // 다건 삭제 관련 핸들러
+  const handleContentCheck = (id: number) => {
+    setSelectedContents(prev =>
+      prev.includes(id)
+        ? prev.filter(contentId => contentId !== id)
+        : [...prev, id]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedContents.length === filteredContents.length) {
+      setSelectedContents([]);
+    } else {
+      setSelectedContents(filteredContents.map(c => c.id));
+    }
+  };
+
+  const handleDeleteSelected = () => {
+    if (selectedContents.length === 0) return;
+    if (confirm(`선택한 ${selectedContents.length}개의 콘텐츠를 삭제하시겠습니까?`)) {
+      // API 호출 예정
+      console.log('Delete contents:', selectedContents);
+      selectedContents.forEach(id => deleteContent(id));
+      setSelectedContents([]);
+    }
   };
 
   const renderViewContent = (content: LearningData) => {
@@ -379,10 +427,72 @@ export default function ContentSettings() {
         ))}
       </div>
 
+      {/* 필터 섹션 */}
+      <div className="mb-4 p-4 bg-gray-800 rounded-lg border border-gray-700 flex items-center gap-4">
+        <div className="flex-1">
+          <input
+            type="text"
+            placeholder="제목 또는 태그로 검색..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-600 rounded-lg text-base text-gray-200 bg-gray-700 transition-colors focus:outline-none focus:border-blue-400 focus:bg-gray-600"
+          />
+        </div>
+        <div className="w-64">
+          <select
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-600 rounded-lg text-base text-gray-200 bg-gray-700 transition-colors focus:outline-none focus:border-blue-400 focus:bg-gray-600"
+          >
+            <option value="">모든 카테고리</option>
+            {AVAILABLE_CATEGORIES.map((category) => (
+              <option key={category.key} value={category.key}>
+                {category.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        {(searchText || filterCategory) && (
+          <button
+            className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-gray-200 rounded-lg transition-colors"
+            onClick={() => {
+              setSearchText('');
+              setFilterCategory('');
+            }}
+          >
+            필터 초기화
+          </button>
+        )}
+      </div>
+
+      {/* 다건 삭제 컨트롤 바 */}
+      {selectedContents.length > 0 && (
+        <div className="mb-4 p-4 bg-blue-600/10 border border-blue-500/30 rounded-lg flex items-center justify-between">
+          <span className="text-blue-400 font-medium">
+            {selectedContents.length}개 항목 선택됨
+          </span>
+          <button
+            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors flex items-center gap-2"
+            onClick={handleDeleteSelected}
+          >
+            <Trash2 size={16} />
+            선택 삭제
+          </button>
+        </div>
+      )}
+
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-700">
         <table className="w-full border-collapse">
           <thead className="bg-gray-700">
             <tr>
+              <th className="p-4 text-left text-gray-300 text-sm font-semibold border-b border-gray-600 w-12">
+                <input
+                  type="checkbox"
+                  checked={selectedContents.length === filteredContents.length && filteredContents.length > 0}
+                  onChange={handleSelectAll}
+                  className="w-4 h-4 rounded border-gray-500 text-blue-600 focus:ring-blue-500 focus:ring-offset-gray-800 cursor-pointer"
+                />
+              </th>
               <th className="p-4 text-left text-gray-300 text-sm font-semibold border-b border-gray-600">ID</th>
               <th className="p-4 text-left text-gray-300 text-sm font-semibold border-b border-gray-600">타입</th>
               <th className="p-4 text-left text-gray-300 text-sm font-semibold border-b border-gray-600">제목</th>
@@ -394,6 +504,14 @@ export default function ContentSettings() {
           <tbody>
             {filteredContents.map((content) => (
               <tr key={content.id} className="hover:bg-gray-700 transition-colors">
+                <td className="p-4 text-gray-200 text-sm border-b border-gray-700">
+                  <input
+                    type="checkbox"
+                    checked={selectedContents.includes(content.id)}
+                    onChange={() => handleContentCheck(content.id)}
+                    className="w-4 h-4 rounded border-gray-500 text-blue-600 focus:ring-blue-500 focus:ring-offset-gray-800 cursor-pointer"
+                  />
+                </td>
                 <td className="p-4 text-gray-200 text-sm border-b border-gray-700">{content.id}</td>
                 <td className="p-4 text-gray-200 text-sm border-b border-gray-700">
                   <span className="px-3 py-1 bg-yellow-500/20 text-yellow-400 rounded-xl text-xs font-medium">
