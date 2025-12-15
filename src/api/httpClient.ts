@@ -1,63 +1,74 @@
-import type {AxiosRequestConfig, AxiosError} from "axios";
-import {axiosInstance} from "./axiosInstance";
-import {ApiError} from "./ApiError";
+import type { AxiosRequestConfig, AxiosError, AxiosInstance } from "axios";
+import { publicAxiosInstance, adminAxiosInstance } from "./axiosInstance";
+import { ApiError } from "./ApiError";
+import type { FailureResponse } from "./model/response/common";
 
 type Mapper<T> = (json: unknown) => T;
 
 function wrapError(e: unknown): never {
-    const error = e as AxiosError<{message?: string}>;
+    const error = e as AxiosError<FailureResponse>;
     const status = error?.response?.status;
-    const msg = error?.response?.data?.message || error?.message || "Request failed";
-    throw new ApiError(msg, {status, details: error?.response?.data});
+
+    // 서버에서 온 에러 응답 (success: false, error: { code, message })
+    const errorData = error?.response?.data?.error;
+    const code = errorData?.code;
+    const msg = errorData?.message || error?.message || "Request failed";
+
+    throw new ApiError(msg, { status, code, details: error?.response?.data });
 }
 
-export const httpClient = {
-    async get<T>(url: string, mapper: Mapper<T>, config?: AxiosRequestConfig): Promise<T> {
-        try {
-            const res = await axiosInstance.get(url, config);
-            return mapper(res.data);
-        } catch (e) {
-            wrapError(e);
-        }
-    },
-    async getList<T>(url: string, mapper: Mapper<T>, config?: AxiosRequestConfig): Promise<T[]> {
-        try {
-            const res = await axiosInstance.get(url, config);
-            const arr = Array.isArray(res.data) ? res.data : res.data?.items ?? [];
-            return arr.map(mapper);
-        } catch (e) {
-            wrapError(e);
-        }
-    },
-    async post<T>(url: string, body: unknown, mapper: Mapper<T>, config?: AxiosRequestConfig): Promise<T> {
-        try {
-            const res = await axiosInstance.post(url, body, config);
-            return mapper(res.data);
-        } catch (e) {
-            wrapError(e);
-        }
-    },
-    async put<T>(url: string, body: unknown, mapper: Mapper<T>, config?: AxiosRequestConfig): Promise<T> {
-        try {
-            const res = await axiosInstance.put(url, body, config);
-            return mapper(res.data);
-        } catch (e) {
-            wrapError(e);
-        }
-    },
-    async patch<T>(url: string, body: unknown, mapper: Mapper<T>, config?: AxiosRequestConfig): Promise<T> {
-        try {
-            const res = await axiosInstance.patch(url, body, config);
-            return mapper(res.data);
-        } catch (e) {
-            wrapError(e);
-        }
-    },
-    async delete(url: string, config?: AxiosRequestConfig): Promise<void> {
-        try {
-            await axiosInstance.delete(url, config);
-        } catch (e) {
-            wrapError(e);
-        }
-    },
-};
+function createHttpClient(instance: AxiosInstance) {
+    return {
+        async get<T>(url: string, mapper: Mapper<T>, config?: AxiosRequestConfig): Promise<T> {
+            try {
+                const res = await instance.get(url, config);
+                return mapper(res.data);
+            } catch (e) {
+                wrapError(e);
+            }
+        },
+        async getList<T>(url: string, mapper: Mapper<T>, config?: AxiosRequestConfig): Promise<T[]> {
+            try {
+                const res = await instance.get(url, config);
+                const arr = Array.isArray(res.data) ? res.data : res.data?.items ?? [];
+                return arr.map(mapper);
+            } catch (e) {
+                wrapError(e);
+            }
+        },
+        async post<T>(url: string, body: unknown, mapper: Mapper<T>, config?: AxiosRequestConfig): Promise<T> {
+            try {
+                const res = await instance.post(url, body, config);
+                return mapper(res.data);
+            } catch (e) {
+                wrapError(e);
+            }
+        },
+        async put<T>(url: string, body: unknown, mapper: Mapper<T>, config?: AxiosRequestConfig): Promise<T> {
+            try {
+                const res = await instance.put(url, body, config);
+                return mapper(res.data);
+            } catch (e) {
+                wrapError(e);
+            }
+        },
+        async patch<T>(url: string, body: unknown, mapper: Mapper<T>, config?: AxiosRequestConfig): Promise<T> {
+            try {
+                const res = await instance.patch(url, body, config);
+                return mapper(res.data);
+            } catch (e) {
+                wrapError(e);
+            }
+        },
+        async delete(url: string, config?: AxiosRequestConfig): Promise<void> {
+            try {
+                await instance.delete(url, config);
+            } catch (e) {
+                wrapError(e);
+            }
+        },
+    };
+}
+
+export const publicHttpClient = createHttpClient(publicAxiosInstance);
+export const adminHttpClient = createHttpClient(adminAxiosInstance);

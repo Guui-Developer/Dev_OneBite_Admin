@@ -1,12 +1,13 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
+import { useAuthStore } from '@/store/authStore';
 
 export default function AdminLayout() {
   // 로그인 체크
-  const isAuthenticated = sessionStorage.getItem('adminToken');
+  const { isAuthenticated } = useAuthStore();
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated()) {
     return <Navigate to="/login" replace />;
   }
 

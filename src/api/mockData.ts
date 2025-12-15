@@ -134,14 +134,8 @@ export const mockContentData: LearningData[] = [
 export const mockContentListData: GetLearningDataListData = {
   content: mockContentData,
   pagination: {
-    lastSeenId: 7,
-    limit: 10,
     total: 428,
-    hasNext: true,
-    returnedCount: 7
-  },
-  filters: {
-    categories: [],
-    appliedCount: 0
+    returnedCount: 7,
+    hasNext: true
   }
 };

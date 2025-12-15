@@ -9,9 +9,10 @@ const FiEdit2 = Edit2;
 const FiTrash2 = Trash2;
 
 export default function CategoryManagement() {
-  const { data, isLoading, fetchCategories, deleteCategory, deleteGroup } = useCategoryStore();
+  const { data, isLoading, fetchCategories, deleteCategory, deleteGroup, addCategory, updateCategory, addGroup, updateGroup } = useCategoryStore();
 
   const [selectedGroup, setSelectedGroup] = useState<string>('common');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -41,11 +42,15 @@ export default function CategoryManagement() {
     setShowGroupModal(true);
   };
 
-  const handleDeleteGroup = (groupKey: string) => {
+  const handleDeleteGroup = async (groupKey: string) => {
     if (confirm(`"${groupKey}" 그룹을 삭제하시겠습니까?\n연관된 카테고리도 함께 삭제됩니다.`)) {
-      deleteGroup(groupKey);
-      if (selectedGroup === groupKey) {
-        setSelectedGroup(groups[0]?.groupKey || '');
+      try {
+        await deleteGroup(groupKey);
+        if (selectedGroup === groupKey) {
+          setSelectedGroup(groups[0]?.groupKey || '');
+        }
+      } catch (error) {
+        alert(error instanceof Error ? error.message : '삭제 실패');
       }
     }
   };
@@ -60,24 +65,108 @@ export default function CategoryManagement() {
     setShowCategoryModal(true);
   };
 
-  const handleDeleteCategory = (key: string) => {
+  const handleDeleteCategory = async (key: string) => {
     if (confirm(`"${key}" 카테고리를 삭제하시겠습니까?`)) {
-      deleteCategory(key);
+      try {
+        await deleteCategory(key);
+      } catch (error) {
+        alert(error instanceof Error ? error.message : '삭제 실패');
+      }
     }
   };
 
-  const handleGroupSubmit = (e: MouseEvent<HTMLButtonElement>) => {
+  const handleGroupSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    // API 호출 예정
-    console.log('Submit group:', editingGroup);
-    setShowGroupModal(false);
+    setIsSubmitting(true);
+
+    try {
+      const form = (e.target as HTMLButtonElement).closest('form') || (e.target as HTMLButtonElement).parentElement?.parentElement;
+      if (!form) return;
+
+      const groupKeyInput = form.querySelector<HTMLInputElement>('input[placeholder*="cloud"]');
+      const groupLabelInput = form.querySelector<HTMLInputElement>('input[placeholder*="클라우드"]');
+      const iconUrlInput = form.querySelector<HTMLInputElement>('input[placeholder*="cdn.simpleicons"]');
+
+      if (!groupKeyInput || !groupLabelInput || !iconUrlInput) return;
+
+      const groupKey = groupKeyInput.value.trim();
+      const groupLabel = groupLabelInput.value.trim();
+      const iconUrl = iconUrlInput.value.trim();
+
+      if (!groupKey || !groupLabel || !iconUrl) {
+        alert('모든 필드를 입력해주세요.');
+        return;
+      }
+
+      if (editingGroupData) {
+        // 수정
+        await updateGroup(editingGroup!, {
+          groupLabel,
+          icon: iconUrl,
+        });
+      } else {
+        // 추가
+        await addGroup({
+          groupKey,
+          groupLabel,
+          icon: iconUrl,
+        });
+      }
+
+      setShowGroupModal(false);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : '저장 실패');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleCategorySubmit = (e: MouseEvent<HTMLButtonElement>) => {
+  const handleCategorySubmit = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    // API 호출 예정
-    console.log('Submit category:', editingCategory);
-    setShowCategoryModal(false);
+    setIsSubmitting(true);
+
+    try {
+      const form = (e.target as HTMLButtonElement).closest('form') || (e.target as HTMLButtonElement).parentElement?.parentElement;
+      if (!form) return;
+
+      const groupSelect = form.querySelector<HTMLSelectElement>('select');
+      const categoryKeyInput = form.querySelector<HTMLInputElement>('input[placeholder*="nextjs"]');
+      const categoryLabelInput = form.querySelector<HTMLInputElement>('input[placeholder*="Next.js"]');
+      const iconUrlInput = form.querySelector<HTMLInputElement>('input[placeholder*="cdn.simpleicons"]');
+
+      if (!groupSelect || !categoryKeyInput || !categoryLabelInput || !iconUrlInput) return;
+
+      const targetGroupKey = groupSelect.value;
+      const categoryKey = categoryKeyInput.value.trim();
+      const categoryLabel = categoryLabelInput.value.trim();
+      const iconUrl = iconUrlInput.value.trim();
+
+      if (!categoryKey || !categoryLabel || !iconUrl) {
+        alert('모든 필드를 입력해주세요.');
+        return;
+      }
+
+      if (editingCategoryData) {
+        // 수정
+        await updateCategory(editingCategory!, {
+          label: categoryLabel,
+          icon: iconUrl,
+        });
+      } else {
+        // 추가
+        await addCategory(targetGroupKey, {
+          key: categoryKey,
+          label: categoryLabel,
+          icon: iconUrl,
+        });
+      }
+
+      setShowCategoryModal(false);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : '저장 실패');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // 그룹 체크박스 관련 핸들러
@@ -97,15 +186,19 @@ export default function CategoryManagement() {
     }
   };
 
-  const handleDeleteSelectedGroups = () => {
+  const handleDeleteSelectedGroups = async () => {
     if (selectedGroups.length === 0) return;
     if (confirm(`선택한 ${selectedGroups.length}개의 그룹을 삭제하시겠습니까?\n연관된 카테고리도 함께 삭제됩니다.`)) {
-      // API 호출 예정
-      console.log('Delete groups:', selectedGroups);
-      selectedGroups.forEach(key => deleteGroup(key));
-      setSelectedGroups([]);
-      if (selectedGroups.includes(selectedGroup)) {
-        setSelectedGroup(groups[0]?.groupKey || '');
+      try {
+        for (const key of selectedGroups) {
+          await deleteGroup(key);
+        }
+        setSelectedGroups([]);
+        if (selectedGroups.includes(selectedGroup)) {
+          setSelectedGroup(groups[0]?.groupKey || '');
+        }
+      } catch (error) {
+        alert(error instanceof Error ? error.message : '삭제 실패');
       }
     }
   };
@@ -127,13 +220,17 @@ export default function CategoryManagement() {
     }
   };
 
-  const handleDeleteSelectedCategories = () => {
+  const handleDeleteSelectedCategories = async () => {
     if (selectedCategories.length === 0) return;
     if (confirm(`선택한 ${selectedCategories.length}개의 카테고리를 삭제하시겠습니까?`)) {
-      // API 호출 예정
-      console.log('Delete categories:', selectedCategories);
-      selectedCategories.forEach(key => deleteCategory(key));
-      setSelectedCategories([]);
+      try {
+        for (const key of selectedCategories) {
+          await deleteCategory(key);
+        }
+        setSelectedCategories([]);
+      } catch (error) {
+        alert(error instanceof Error ? error.message : '삭제 실패');
+      }
     }
   };
 
@@ -392,10 +489,11 @@ export default function CategoryManagement() {
                 취소
               </button>
               <button
-                className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50"
                 onClick={handleGroupSubmit}
+                disabled={isSubmitting}
               >
-                {editingGroupData ? '수정' : '추가'}
+                {isSubmitting ? '저장 중...' : (editingGroupData ? '수정' : '추가')}
               </button>
             </div>
           </div>
@@ -471,10 +569,11 @@ export default function CategoryManagement() {
                 취소
               </button>
               <button
-                className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50"
                 onClick={handleCategorySubmit}
+                disabled={isSubmitting}
               >
-                {editingCategoryData ? '수정' : '추가'}
+                {isSubmitting ? '저장 중...' : (editingCategoryData ? '수정' : '추가')}
               </button>
             </div>
           </div>

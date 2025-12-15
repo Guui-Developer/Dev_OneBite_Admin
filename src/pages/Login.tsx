@@ -1,19 +1,45 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AdminApi } from '@/api/modules/AdminApi';
+import { useAuthStore } from '@/store/authStore';
 
 export default function Login() {
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { setAuth } = useAuthStore();
+  const adminApi = new AdminApi();
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setError('');
+    setIsLoading(true);
 
-    if (id && password) {
-      // 임시로 로컬스토리지에 토큰 저장
-      sessionStorage.setItem('adminToken', 'temp-token');
-      navigate('/admin');
+    try {
+      const response = await adminApi.login({
+        id: id,
+        password: password,
+      });
+
+      console.log('[Login] Response:', response);
+
+      // 직접 토큰 저장
+      if (response.accessToken && response.accessExpiresAt) {
+        setAuth(response.accessToken, response.accessExpiresAt);
+        console.log('[Login] Token saved, navigating to /admin');
+        navigate('/admin');
+      } else {
+        console.error('[Login] Missing token in response:', response);
+        setError('로그인 응답에 토큰이 없습니다.');
+      }
+    } catch (err) {
+      console.error('[Login] Login failed:', err);
+      setError(err instanceof Error ? err.message : '로그인에 실패했습니다.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -60,11 +86,18 @@ export default function Login() {
             />
           </div>
 
+          {error && (
+            <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">
+              {error}
+            </div>
+          )}
+
           <button
             type="submit"
-            className="w-full py-3 bg-blue-600 text-white rounded-lg text-base font-bold hover:bg-blue-700 active:bg-blue-800 transition-colors shadow-lg hover:shadow-xl"
+            disabled={isLoading}
+            className="w-full py-3 bg-blue-600 text-white rounded-lg text-base font-bold hover:bg-blue-700 active:bg-blue-800 transition-colors shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            로그인
+            {isLoading ? '로그인 중...' : '로그인'}
           </button>
         </form>
       </div>

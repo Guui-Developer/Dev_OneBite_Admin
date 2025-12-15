@@ -1,19 +1,32 @@
-import axios from "axios";
-import {API_BASE_URL, API_TIMEOUT_MS} from "./config";
-import {installLoggingInterceptor} from "./interceptors/loggingInterceptor";
-import {installRetryInterceptor} from "./interceptors/retryInterceptor";
-import {responseCommonInterceptor} from "./interceptors/responseCommonInterceptor.ts";
+import axios, {type AxiosInstance} from "axios";
+import { PUBLIC_API_BASE_URL, ADMIN_API_BASE_URL, API_TIMEOUT_MS } from "./config";
+import { installLoggingInterceptor } from "./interceptors/loggingInterceptor";
+import { installRetryInterceptor } from "./interceptors/retryInterceptor";
+import { responseCommonInterceptor } from "./interceptors/responseCommonInterceptor.ts";
+import { installAuthInterceptor } from "./interceptors/authInterceptor";
 
-const axiosInstance = axios.create({baseURL: API_BASE_URL, timeout: API_TIMEOUT_MS});
-axiosInstance.interceptors.request.use((c) => {
-    (c.headers as any)["Accept"] = "application/json";
-    return c;
-});
+function createAxiosInstance(baseURL: string, requiresAuth: boolean = false): AxiosInstance {
+    const instance = axios.create({ baseURL, timeout: API_TIMEOUT_MS });
 
-console.log("[axios] created baseURL is"+API_BASE_URL);
+    instance.interceptors.request.use((c) => {
+        c.headers["Accept"] = "application/json";
+        return c;
+    });
 
-responseCommonInterceptor(axiosInstance);
-installRetryInterceptor(axiosInstance);
-installLoggingInterceptor(axiosInstance);
+    console.log(`[axios] created baseURL is ${baseURL}`);
 
-export {axiosInstance};
+    responseCommonInterceptor(instance);
+    installRetryInterceptor(instance);
+    installLoggingInterceptor(instance);
+
+    if (requiresAuth) {
+        installAuthInterceptor(instance);
+    }
+
+    return instance;
+}
+
+const publicAxiosInstance = createAxiosInstance(PUBLIC_API_BASE_URL, false);
+const adminAxiosInstance = createAxiosInstance(ADMIN_API_BASE_URL, true);
+
+export { publicAxiosInstance, adminAxiosInstance };

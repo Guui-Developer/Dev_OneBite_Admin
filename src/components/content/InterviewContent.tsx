@@ -27,7 +27,7 @@ export default function InterviewContent({ content }: InterviewContentProps) {
         {content.tails && content.tails.length > 0 && (
             <div className="space-y-3">
                 <h3 className="text-base font-semibold text-[#FFFFF] mb-3">🔗 꼬리질문</h3>
-                {content.tails.map((tailQuestion, index) => (
+                {content.tails.map((tailQuestion: string, index: number) => (
                     <label
                         key={index}
                         className="flex items-start gap-3 p-3 rounded-lg bg-[#2D2D2D]/50 border border-[#444]/50

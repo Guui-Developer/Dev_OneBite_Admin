@@ -14,8 +14,9 @@ import { useCategoryStore } from '@/store/categoryStore';
 import type { LearningData } from '@/api/model/response/content_types';
 
 export default function ContentSettings() {
-  const { data: contentData, isLoading, fetchContents, deleteContent } = useContentStore();
+  const { data: contentData, isLoading, fetchContents, deleteContent, addContent, updateContent } = useContentStore();
   const { data: categoryData, fetchCategories } = useCategoryStore();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     fetchContents();
@@ -90,16 +91,92 @@ export default function ContentSettings() {
     setShowModal(true);
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     if (confirm(`ID ${id} 콘텐츠를 삭제하시겠습니까?`)) {
-      deleteContent(id);
+      try {
+        await deleteContent(id);
+      } catch (error) {
+        alert(error instanceof Error ? error.message : '삭제 실패');
+      }
     }
   };
 
-  const handleSubmit = (e: MouseEvent<HTMLButtonElement>) => {
+  const handleSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    console.log('Submit:', { type: formSelectedType, tags: selectedTags });
-    setShowModal(false);
+    setIsSubmitting(true);
+
+    try {
+      const form = (e.target as HTMLButtonElement).closest('form') || (e.target as HTMLButtonElement).parentElement?.parentElement;
+      if (!form) return;
+
+      const titleInput = form.querySelector<HTMLInputElement>('input[placeholder*="옵셔널 체이닝"]');
+      if (!titleInput) return;
+
+      const title = titleInput.value.trim();
+      if (!title) {
+        alert('제목을 입력해주세요.');
+        return;
+      }
+
+      if (selectedTags.length === 0) {
+        alert('최소 1개의 카테고리 태그를 선택해주세요.');
+        return;
+      }
+
+      // 타입별 필드 수집 (간단한 예시)
+      const contentData: any = {
+        type: formSelectedType,
+        title,
+        tags: selectedTags,
+        createdAt: new Date().toISOString(),
+      };
+
+      // 실제로는 각 타입별로 필드를 수집해야 함
+      // 여기서는 간단하게 처리
+      const textareas = form.querySelectorAll<HTMLTextAreaElement>('textarea');
+      const inputs = form.querySelectorAll<HTMLInputElement>('input[type="text"]');
+
+      switch (formSelectedType) {
+        case 'code_tip':
+          contentData.code = textareas[0]?.value || '';
+          contentData.language = inputs[1]?.value || 'javascript';
+          contentData.description = textareas[1]?.value || '';
+          break;
+        case 'bug_challenge':
+          contentData.code = textareas[0]?.value || '';
+          contentData.answer = textareas[1]?.value || '';
+          break;
+        case 'code_review':
+          contentData.before = textareas[0]?.value || '';
+          contentData.after = textareas[1]?.value || '';
+          contentData.feedback = textareas[2]?.value || '';
+          break;
+        case 'interview':
+          contentData.question = textareas[0]?.value || '';
+          contentData.answer = textareas[1]?.value || '';
+          contentData.tails = textareas[2]?.value.split('\n').filter(t => t.trim()) || [];
+          break;
+        case 'meme':
+          contentData.image = inputs[1]?.value || '';
+          contentData.description = textareas[0]?.value || '';
+          break;
+      }
+
+      if (editingContent) {
+        // 수정
+        await updateContent(editingContent.id, contentData);
+      } else {
+        // 추가
+        contentData.id = Date.now(); // 임시 ID
+        await addContent(contentData);
+      }
+
+      setShowModal(false);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : '저장 실패');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleTagToggle = (categoryKey: string) => {
@@ -131,13 +208,17 @@ export default function ContentSettings() {
     }
   };
 
-  const handleDeleteSelected = () => {
+  const handleDeleteSelected = async () => {
     if (selectedContents.length === 0) return;
     if (confirm(`선택한 ${selectedContents.length}개의 콘텐츠를 삭제하시겠습니까?`)) {
-      // API 호출 예정
-      console.log('Delete contents:', selectedContents);
-      selectedContents.forEach(id => deleteContent(id));
-      setSelectedContents([]);
+      try {
+        for (const id of selectedContents) {
+          await deleteContent(id);
+        }
+        setSelectedContents([]);
+      } catch (error) {
+        alert(error instanceof Error ? error.message : '삭제 실패');
+      }
     }
   };
 
@@ -660,10 +741,11 @@ export default function ContentSettings() {
                 취소
               </button>
               <button
-                className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50"
                 onClick={handleSubmit}
+                disabled={isSubmitting}
               >
-                {editingContent ? '수정' : '추가'}
+                {isSubmitting ? '저장 중...' : (editingContent ? '수정' : '추가')}
               </button>
             </div>
           </div>
@@ -734,7 +816,7 @@ export default function ContentSettings() {
 
                 {/* Tags */}
                 <div className="flex flex-wrap gap-2">
-                  {viewingContent.tags.map((tag) => {
+                  {viewingContent.tags.map((tag: string) => {
                     const category = AVAILABLE_CATEGORIES.find(c => c.key === tag);
                     return (
                       <span
