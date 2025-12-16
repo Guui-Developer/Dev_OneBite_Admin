@@ -1,6 +1,6 @@
 import CodeBox from '@/components/CodeBox';
 import MarkdownBox from '@/components/MarkdownBox';
-import type { CodeTipData } from '@/api/model/response/content_types';
+import type { CodeTipData } from '@/api/model/public/response/content_types';
 
 interface CodeTipContentProps {
   content: CodeTipData;

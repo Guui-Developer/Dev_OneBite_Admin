@@ -1,6 +1,6 @@
 import CodeBox from '@/components/CodeBox';
 import MarkdownBox from '@/components/MarkdownBox';
-import type { CodeReviewData } from '@/api/model/response/content_types';
+import type { CodeReviewData } from '@/api/model/public/response/content_types';
 
 interface CodeReviewContentProps {
   content: CodeReviewData;

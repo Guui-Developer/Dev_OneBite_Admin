@@ -1,7 +1,7 @@
 import { publicHttpClient } from "../httpClient";
-import type { CategoriesData } from "../model/response/category";
-import type { ContentListData } from "../model/response/content";
-import type { GetContentListParams } from "../model/request/content";
+import type { CategoriesData } from "../model/public/response/category";
+import type { ContentListData } from "../model/public/response/content";
+import type { GetContentListParams } from "../model/admin/request/content";
 import { PUBLIC_ENDPOINTS } from "../constants/endpoints";
 
 /**

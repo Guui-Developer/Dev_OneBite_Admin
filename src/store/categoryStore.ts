@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import type { CategoriesData, CategoryGroup, Category } from '@/api/model/response/category';
-import type { CategoryGroupDto } from '@/api/model/response/group';
-import type { CategoryDto } from '@/api/model/response/admin-category';
+import type { CategoriesData, CategoryGroup, Category } from '@/api/model/public/response/category';
+import type { CategoryGroupDto } from '@/api/model/public/response/group';
+import type { CategoryDto } from '@/api/model/admin/response/category';
 import { PublicApi } from '@/api/modules/PublicApi';
 import { AdminApi } from '@/api/modules/AdminApi';
 
@@ -30,9 +30,11 @@ interface CategoryStore {
   addCategory: (groupKey: string, categoryData: { key: string; label: string; icon: string }) => Promise<void>;
   updateCategory: (categoryKey: string, updates: { label?: string; icon?: string }) => Promise<void>;
   deleteCategory: (categoryKey: string) => Promise<void>;
+  deleteCategories: (categoryKeys: string[]) => Promise<void>;
   addGroup: (groupData: { groupKey: string; groupLabel: string; icon: string }) => Promise<void>;
   updateGroup: (groupKey: string, updates: { groupLabel?: string; icon?: string }) => Promise<void>;
   deleteGroup: (groupKey: string) => Promise<void>;
+  deleteGroups: (groupKeys: string[]) => Promise<void>;
 }
 
 export const useCategoryStore = create<CategoryStore>((set, get) => ({
@@ -130,7 +132,7 @@ export const useCategoryStore = create<CategoryStore>((set, get) => ({
   },
 
   deleteCategory: async (categoryKey: string) => {
-    const { categoryMetadata, fetchCategories } = get();
+    const { categoryMetadata } = get();
     const categoryMeta = categoryMetadata.get(categoryKey);
     if (!categoryMeta) throw new Error('Category not found');
 
@@ -139,8 +141,26 @@ export const useCategoryStore = create<CategoryStore>((set, get) => ({
       ids: [categoryMeta.categoryId],
       force: false,
     });
+  },
 
-    await fetchCategories();
+  deleteCategories: async (categoryKeys: string[]) => {
+    const { categoryMetadata } = get();
+    const ids: number[] = [];
+
+    for (const key of categoryKeys) {
+      const categoryMeta = categoryMetadata.get(key);
+      if (categoryMeta) {
+        ids.push(categoryMeta.categoryId);
+      }
+    }
+
+    if (ids.length === 0) return;
+
+    const adminApi = new AdminApi();
+    await adminApi.deleteCategories({
+      ids,
+      force: false,
+    });
   },
 
   addGroup: async (groupData: { groupKey: string; groupLabel: string; icon: string }) => {
@@ -173,17 +193,35 @@ export const useCategoryStore = create<CategoryStore>((set, get) => ({
   },
 
   deleteGroup: async (groupKey: string) => {
-    const { groupMetadata, fetchCategories } = get();
+    const { groupMetadata } = get();
     const groupMeta = groupMetadata.get(groupKey);
     if (!groupMeta) throw new Error('Group not found');
 
     const adminApi = new AdminApi();
     await adminApi.deleteCategoryGroups({
       ids: [groupMeta.groupId],
-      force: true,
+      force: false,
     });
+  },
 
-    await fetchCategories();
+  deleteGroups: async (groupKeys: string[]) => {
+    const { groupMetadata } = get();
+    const ids: number[] = [];
+
+    for (const key of groupKeys) {
+      const groupMeta = groupMetadata.get(key);
+      if (groupMeta) {
+        ids.push(groupMeta.groupId);
+      }
+    }
+
+    if (ids.length === 0) return;
+
+    const adminApi = new AdminApi();
+    await adminApi.deleteCategoryGroups({
+      ids,
+      force: false,
+    });
   }
 }));
 

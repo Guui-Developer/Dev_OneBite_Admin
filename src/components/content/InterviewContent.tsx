@@ -1,5 +1,5 @@
 import MarkdownBox from '@/components/MarkdownBox';
-import type { InterviewData } from '@/api/model/response/content_types';
+import type { InterviewData } from '@/api/model/public/response/content_types';
 
 interface InterviewContentProps {
   content: InterviewData;

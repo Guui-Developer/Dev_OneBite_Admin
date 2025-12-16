@@ -1,26 +1,26 @@
 import { adminHttpClient } from "../httpClient";
-import type { PageResponse } from "../model/response/page";
-import type { LoginRequest } from "../model/request/auth";
-import type { LoginResponse } from "../model/response/auth";
+import type { PageResponse } from "../model/public/response/page";
+import type { LoginRequest } from "../model/admin/request/auth";
+import type { LoginResponse } from "../model/public/response/auth";
 import type {
   CreateCategoryGroupRequest,
   UpdateCategoryGroupRequest,
   DeleteCategoryGroupRequest,
-} from "../model/request/group";
-import type { CategoryGroupDto } from "../model/response/group";
+} from "../model/admin/request/group";
+import type { CategoryGroupDto } from "../model/public/response/group";
 import type {
   CreateCategoryRequest,
   UpdateCategoryRequest,
   DeleteCategoryRequest,
-} from "../model/request/category";
-import type { CategoryDto } from "../model/response/admin-category";
+} from "../model/admin/request/category";
+import type { CategoryDto } from "../model/admin/response/category";
 import type {
   GetAdminContentListParams,
   CreateContentRequest,
   UpdateContentRequest,
   DeleteContentRequest,
-} from "../model/request/content";
-import type { ContentDto } from "../model/response/admin-content";
+} from "../model/admin/request/content";
+import type { ContentDto } from "../model/admin/response/content";
 import {
   AUTH_ENDPOINTS,
   GROUP_ENDPOINTS,

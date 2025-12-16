@@ -8,7 +8,7 @@ const FiEdit2 = Edit2;
 const FiTrash2 = Trash2;
 
 export default function CategoryManagement() {
-  const { data, isLoading, fetchCategories, deleteCategory, deleteGroup, addCategory, updateCategory, addGroup, updateGroup } = useCategoryStore();
+  const { data, isLoading, fetchCategories, deleteCategory, deleteCategories, deleteGroup, deleteGroups, addCategory, updateCategory, addGroup, updateGroup } = useCategoryStore();
 
   const [selectedGroup, setSelectedGroup] = useState<string>('common');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -44,6 +44,7 @@ export default function CategoryManagement() {
     if (confirm(`"${groupKey}" 그룹을 삭제하시겠습니까?\n연관된 카테고리도 함께 삭제됩니다.`)) {
       try {
         await deleteGroup(groupKey);
+        await fetchCategories();
         if (selectedGroup === groupKey) {
           setSelectedGroup(groups[0]?.groupKey || '');
         }
@@ -67,6 +68,7 @@ export default function CategoryManagement() {
     if (confirm(`"${key}" 카테고리를 삭제하시겠습니까?`)) {
       try {
         await deleteCategory(key);
+        await fetchCategories();
       } catch (error) {
         alert(error instanceof Error ? error.message : '삭제 실패');
       }
@@ -183,9 +185,8 @@ export default function CategoryManagement() {
     if (selectedGroups.length === 0) return;
     if (confirm(`선택한 ${selectedGroups.length}개의 그룹을 삭제하시겠습니까?\n연관된 카테고리도 함께 삭제됩니다.`)) {
       try {
-        for (const key of selectedGroups) {
-          await deleteGroup(key);
-        }
+        await deleteGroups(selectedGroups);
+        await fetchCategories();
         setSelectedGroups([]);
         if (selectedGroups.includes(selectedGroup)) {
           setSelectedGroup(groups[0]?.groupKey || '');
@@ -216,9 +217,8 @@ export default function CategoryManagement() {
     if (selectedCategories.length === 0) return;
     if (confirm(`선택한 ${selectedCategories.length}개의 카테고리를 삭제하시겠습니까?`)) {
       try {
-        for (const key of selectedCategories) {
-          await deleteCategory(key);
-        }
+        await deleteCategories(selectedCategories);
+        await fetchCategories();
         setSelectedCategories([]);
       } catch (error) {
         alert(error instanceof Error ? error.message : '삭제 실패');

@@ -1,10 +1,3 @@
-/**
- * 어드민 콘텐츠 응답 타입
- */
-
-/**
- * 콘텐츠 DTO
- */
 export interface ContentDto {
   contentId: number;
   type: string;

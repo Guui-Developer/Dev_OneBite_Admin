@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import MarkdownBox from '@/components/MarkdownBox';
 import { Icon } from '@/components/icons/Icon';
-import type { MemeData } from '@/api/model/response/content_types';
+import type { MemeData } from '@/api/model/public/response/content_types';
 
 interface MemeContentProps {
   content: MemeData;

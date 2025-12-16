@@ -11,36 +11,41 @@ import {
 } from '../components/content';
 import { useContentStore } from '@/store/contentStore';
 import { useCategoryStore } from '@/store/categoryStore';
-import type { LearningData } from '@/api/model/response/content_types';
+import type { LearningData } from '@/api/model/public/response/content_types';
 
 export default function ContentSettings() {
-  const { data: contentData, isLoading, fetchContents, deleteContent, addContent, updateContent } = useContentStore();
+  const { data: contentData, isLoading, fetchContents, deleteContent, deleteContents, addContent, updateContent } = useContentStore();
   const { data: categoryData, fetchCategories } = useCategoryStore();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>('all');
+  const [showModal, setShowModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [showJsonUploadModal, setShowJsonUploadModal] = useState(false);
+  const [editingContent, setEditingContent] = useState<LearningData | null>(null);
+  const [viewingContent, setViewingContent] = useState<LearningData | null>(null);
+  const [formSelectedType, setFormSelectedType] = useState<string>('code_tip');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [jsonText, setJsonText] = useState<string>('');
+  const [selectedContents, setSelectedContents] = useState<number[]>([]);
+  const [filterCategory, setFilterCategory] = useState<string>('');
+  const [searchText, setSearchText] = useState<string>('');
+  const [currentPage, setCurrentPage] = useState(0);
+  const pageSize = 100;
 
   useEffect(() => {
-    fetchContents();
+    fetchContents({ page: currentPage, size: pageSize, keyword: searchText });
     fetchCategories();
-  }, [fetchContents, fetchCategories]);
+  }, [currentPage, fetchCategories]);
+
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [searchText, filterCategory, activeTab]);
 
   const GROUPS = categoryData?.groups || [];
   const AVAILABLE_CATEGORIES = GROUPS.flatMap(g =>
     g.categories.map(c => ({ ...c, groupKey: g.groupKey }))
   );
-
-  const [activeTab, setActiveTab] = useState<string>('all');
-
-  const [showModal, setShowModal] = useState(false);
-  const [showViewModal, setShowViewModal] = useState(false);
-  const [editingContent, setEditingContent] = useState<LearningData | null>(null);
-  const [viewingContent, setViewingContent] = useState<LearningData | null>(null);
-  const [formSelectedType, setFormSelectedType] = useState<string>('code_tip');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-
-  const [selectedContents, setSelectedContents] = useState<number[]>([]);
-
-  const [filterCategory, setFilterCategory] = useState<string>('');
-  const [searchText, setSearchText] = useState<string>('');
 
   const tabs = [
     { key: 'all', label: '전체' },
@@ -60,13 +65,10 @@ export default function ContentSettings() {
     filteredContents = filteredContents.filter(c => c.tags.includes(filterCategory));
   }
 
-  if (searchText) {
-    const lowerSearch = searchText.toLowerCase();
-    filteredContents = filteredContents.filter(c =>
-      c.title.toLowerCase().includes(lowerSearch) ||
-      c.tags.some(tag => tag.toLowerCase().includes(lowerSearch))
-    );
-  }
+  const totalElements = contentData?.pagination.total || 0;
+  const totalPages = Math.ceil(totalElements / pageSize);
+  const hasNext = contentData?.pagination.hasNext || false;
+  const hasPrevious = currentPage > 0;
 
   const handleAdd = () => {
     setEditingContent(null);
@@ -91,6 +93,7 @@ export default function ContentSettings() {
     if (confirm(`ID ${id} 콘텐츠를 삭제하시겠습니까?`)) {
       try {
         await deleteContent(id);
+        await fetchContents({ page: currentPage, size: pageSize, keyword: searchText });
       } catch (error) {
         alert(error instanceof Error ? error.message : '삭제 실패');
       }
@@ -162,6 +165,7 @@ export default function ContentSettings() {
         await addContent(contentData);
       }
 
+      await fetchContents({ page: currentPage, size: pageSize, keyword: searchText });
       setShowModal(false);
     } catch (error) {
       alert(error instanceof Error ? error.message : '저장 실패');
@@ -180,6 +184,45 @@ export default function ContentSettings() {
 
   const handleTypeChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setFormSelectedType(e.target.value);
+  };
+
+  const handleJsonUpload = async () => {
+    if (!jsonText.trim()) {
+      alert('JSON 데이터를 입력해주세요.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const jsonData = JSON.parse(jsonText);
+      const contentsArray = Array.isArray(jsonData) ? jsonData : [jsonData];
+
+      if (contentsArray.length === 0) {
+        alert('업로드할 콘텐츠가 없습니다.');
+        return;
+      }
+
+      for (let i = 0; i < contentsArray.length; i++) {
+        await addContent(contentsArray[i]);
+        if (i < contentsArray.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+      }
+
+      await fetchContents({ page: currentPage, size: pageSize, keyword: searchText });
+
+      alert(`${contentsArray.length}개의 콘텐츠가 추가되었습니다.`);
+      setShowJsonUploadModal(false);
+      setJsonText('');
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        alert('올바른 JSON 형식이 아닙니다.');
+      } else {
+        alert(error instanceof Error ? error.message : '업로드 실패');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleContentCheck = (id: number) => {
@@ -202,9 +245,8 @@ export default function ContentSettings() {
     if (selectedContents.length === 0) return;
     if (confirm(`선택한 ${selectedContents.length}개의 콘텐츠를 삭제하시겠습니까?`)) {
       try {
-        for (const id of selectedContents) {
-          await deleteContent(id);
-        }
+        await deleteContents(selectedContents);
+        await fetchContents({ page: currentPage, size: pageSize, keyword: searchText });
         setSelectedContents([]);
       } catch (error) {
         alert(error instanceof Error ? error.message : '삭제 실패');
@@ -474,12 +516,20 @@ export default function ContentSettings() {
     <div className="max-w-[1400px]">
       <div className="flex justify-between items-center mb-8">
         <h1 className="m-0 text-gray-50 text-3xl font-bold">콘텐츠 관리</h1>
-        <button
-          className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
-          onClick={handleAdd}
-        >
-          <Plus size={20} /> 콘텐츠 추가
-        </button>
+        <div className="flex gap-3">
+          <button
+            className="px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors inline-flex items-center gap-2"
+            onClick={() => setShowJsonUploadModal(true)}
+          >
+            📄 JSON 일괄 업로드
+          </button>
+          <button
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
+            onClick={handleAdd}
+          >
+            <Plus size={20} /> 콘텐츠 추가
+          </button>
+        </div>
       </div>
 
       <div className="flex gap-2 mb-6 border-b-2 border-gray-700">
@@ -502,12 +552,27 @@ export default function ContentSettings() {
         <div className="flex-1">
           <input
             type="text"
-            placeholder="제목 또는 태그로 검색..."
+            placeholder="제목으로 검색..."
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                setCurrentPage(0);
+                fetchContents({ page: 0, size: pageSize, keyword: searchText });
+              }
+            }}
             className="w-full px-4 py-2 border border-gray-600 rounded-lg text-base text-gray-200 bg-gray-700 transition-colors focus:outline-none focus:border-blue-400 focus:bg-gray-600"
           />
         </div>
+        <button
+          className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
+          onClick={() => {
+            setCurrentPage(0);
+            fetchContents({ page: 0, size: pageSize, keyword: searchText });
+          }}
+        >
+          검색
+        </button>
         <div className="w-64">
           <select
             value={filterCategory}
@@ -627,6 +692,55 @@ export default function ContentSettings() {
             ))}
           </tbody>
         </table>
+      </div>
+
+      <div className="flex items-center justify-between mt-6">
+        <div className="text-gray-400 text-sm">
+          전체 {totalElements}개 중 {currentPage * pageSize + 1}-{Math.min((currentPage + 1) * pageSize, totalElements)}개 표시
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            className="px-4 py-2 bg-gray-700 text-gray-200 rounded-lg hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={() => setCurrentPage(prev => prev - 1)}
+            disabled={!hasPrevious}
+          >
+            이전
+          </button>
+          <div className="flex items-center gap-1">
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let pageNum;
+              if (totalPages <= 5) {
+                pageNum = i;
+              } else if (currentPage < 3) {
+                pageNum = i;
+              } else if (currentPage > totalPages - 4) {
+                pageNum = totalPages - 5 + i;
+              } else {
+                pageNum = currentPage - 2 + i;
+              }
+              return (
+                <button
+                  key={pageNum}
+                  className={`w-10 h-10 rounded-lg transition-colors ${
+                    currentPage === pageNum
+                      ? 'bg-blue-600 text-white font-semibold'
+                      : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+                  }`}
+                  onClick={() => setCurrentPage(pageNum)}
+                >
+                  {pageNum + 1}
+                </button>
+              );
+            })}
+          </div>
+          <button
+            className="px-4 py-2 bg-gray-700 text-gray-200 rounded-lg hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={() => setCurrentPage(prev => prev + 1)}
+            disabled={!hasNext}
+          >
+            다음
+          </button>
+        </div>
       </div>
 
       {showModal && (
@@ -829,6 +943,72 @@ export default function ContentSettings() {
                   수정하기
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showJsonUploadModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowJsonUploadModal(false)}>
+          <div className="bg-gray-800 rounded-lg shadow-2xl w-full max-w-4xl border border-gray-700" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center p-6 border-b border-gray-700">
+              <h2 className="text-xl font-semibold text-gray-50 m-0">JSON 일괄 업로드</h2>
+              <button
+                className="text-gray-400 hover:text-gray-200 text-3xl leading-none transition-colors"
+                onClick={() => setShowJsonUploadModal(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="p-6">
+              <div className="mb-4">
+                <p className="text-gray-300 text-sm mb-2">
+                  JSON 배열 형식으로 여러 콘텐츠를 한번에 추가할 수 있습니다.
+                </p>
+                <details className="text-gray-400 text-xs mb-4">
+                  <summary className="cursor-pointer hover:text-gray-300">예시 보기</summary>
+                  <pre className="mt-2 p-3 bg-gray-900 rounded-lg overflow-x-auto text-xs">
+{`[
+  {
+    "type": "code_tip",
+    "title": "옵셔널 체이닝",
+    "tags": ["javascript"],
+    "code": "const value = obj?.property?.nestedProperty;",
+    "language": "JavaScript",
+    "description": "옵셔널 체이닝을 사용하면 안전하게 중첩된 속성에 접근할 수 있습니다."
+  },
+  {
+    "type": "bug_challenge",
+    "title": "배열 버그 찾기",
+    "tags": ["javascript"],
+    "code": "const arr = [1,2,3];\\narr[10] = 99;\\nconsole.log(arr.length);",
+    "answer": "배열의 length는 11이 됩니다. 중간 인덱스는 empty로 채워집니다."
+  }
+]`}
+                  </pre>
+                </details>
+              </div>
+              <textarea
+                className="w-full h-96 px-4 py-3 border border-gray-600 rounded-lg text-sm text-gray-200 bg-gray-700 transition-colors focus:outline-none focus:border-blue-400 focus:bg-gray-600 font-mono"
+                placeholder="JSON 배열을 입력하세요..."
+                value={jsonText}
+                onChange={(e) => setJsonText(e.target.value)}
+              />
+            </div>
+            <div className="flex gap-3 p-6 border-t border-gray-700">
+              <button
+                className="flex-1 py-3 bg-gray-700 text-gray-200 rounded-lg font-semibold hover:bg-gray-600 transition-colors"
+                onClick={() => setShowJsonUploadModal(false)}
+              >
+                취소
+              </button>
+              <button
+                className="flex-1 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:opacity-50"
+                onClick={handleJsonUpload}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? '업로드 중...' : '업로드'}
+              </button>
             </div>
           </div>
         </div>

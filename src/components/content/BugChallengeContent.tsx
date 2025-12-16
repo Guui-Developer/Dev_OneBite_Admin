@@ -2,7 +2,7 @@ import {useState} from 'react';
 import CodeBox from '@/components/CodeBox';
 import MarkdownBox from '@/components/MarkdownBox';
 import {Icon} from '@/components/icons/Icon';
-import type {BugChallengeData} from '@/api/model/response/content_types';
+import type {BugChallengeData} from '@/api/model/public/response/content_types';
 
 interface BugChallengeContentProps {
     content: BugChallengeData;

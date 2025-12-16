@@ -1,14 +1,14 @@
 import { cn } from '@/lib/utils';
 import { Icon } from '@/components/icons/Icon';
 import Card from '@/components/Card';
-import type { LearningData } from '@/api/model/response/learndata';
+import type { LearningData } from '@/api/model/public/response/learndata';
 import {
   isCodeTip,
   isBugChallenge,
   isCodeReview,
   isMeme,
   isInterview
-} from '@/api/model/response/learndata';
+} from '@/api/model/public/response/learndata';
 import {
   CodeTipContent,
   BugChallengeContent,
