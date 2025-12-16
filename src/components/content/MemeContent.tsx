@@ -27,7 +27,6 @@ export default function MemeContent({ content }: MemeContentProps) {
         <MarkdownBox content={content.description} />
       </div>
 
-      {/* Fullscreen Modal */}
       {isFullscreen && (
         <div
           className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"

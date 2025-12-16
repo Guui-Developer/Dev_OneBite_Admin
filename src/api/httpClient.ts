@@ -9,7 +9,6 @@ function wrapError(e: unknown): never {
     const error = e as AxiosError<FailureResponse>;
     const status = error?.response?.status;
 
-    // 서버에서 온 에러 응답 (success: false, error: { code, message })
     const errorData = error?.response?.data?.error;
     const code = errorData?.code;
     const msg = errorData?.message || error?.message || "Request failed";

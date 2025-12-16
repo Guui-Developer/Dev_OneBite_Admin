@@ -4,7 +4,6 @@ import Sidebar from '../components/Sidebar';
 import { useAuthStore } from '@/store/authStore';
 
 export default function AdminLayout() {
-  // 로그인 체크
   const { isAuthenticated } = useAuthStore();
 
   if (!isAuthenticated()) {

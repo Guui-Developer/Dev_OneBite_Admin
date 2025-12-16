@@ -77,7 +77,6 @@ export function Icon({
                          ...rest
                      }: IconProps) {
 
-    // lucide-react 아이콘 처리
     if (type === 'lucide') {
         const LucideIcon = (LucideIcons as any)[name];
         if (!LucideIcon) {
@@ -97,7 +96,6 @@ export function Icon({
         )
     }
 
-    // 커스텀 SVG 처리
     const exists = mode === 'eager' ? !!EAGER_REG[name] : !!LAZY_REG[name]
     if (!exists) {
         return <FallbackBox size={size} color={color} className={className} />

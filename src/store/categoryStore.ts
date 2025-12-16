@@ -5,7 +5,6 @@ import type { CategoryDto } from '@/api/model/response/admin-category';
 import { PublicApi } from '@/api/modules/PublicApi';
 import { AdminApi } from '@/api/modules/AdminApi';
 
-// 메타데이터를 포함한 확장된 타입
 interface CategoryWithMeta extends Category {
   categoryId?: number;
   categoryGroupId?: number;
@@ -21,14 +20,12 @@ interface CategoriesDataWithMeta extends CategoriesData {
 }
 
 interface CategoryStore {
-  // State
   data: CategoriesDataWithMeta | null;
   groupMetadata: Map<string, CategoryGroupDto>;
   categoryMetadata: Map<string, CategoryDto>;
   isLoading: boolean;
   error: string | null;
 
-  // Actions
   fetchCategories: () => Promise<void>;
   addCategory: (groupKey: string, categoryData: { key: string; label: string; icon: string }) => Promise<void>;
   updateCategory: (categoryKey: string, updates: { label?: string; icon?: string }) => Promise<void>;
@@ -39,7 +36,6 @@ interface CategoryStore {
 }
 
 export const useCategoryStore = create<CategoryStore>((set, get) => ({
-  // Initial State
   data: null,
   groupMetadata: new Map(),
   categoryMetadata: new Map(),
@@ -51,17 +47,12 @@ export const useCategoryStore = create<CategoryStore>((set, get) => ({
     try {
       const publicApi = new PublicApi();
       const adminApi = new AdminApi();
-
-      // PublicApi로 화면 표시용 데이터 가져오기
       const publicData = await publicApi.getCategories();
-
-      // AdminApi로 메타데이터 가져오기 (페이지네이션)
       const [groupsResponse, categoriesResponse] = await Promise.all([
         adminApi.getCategoryGroups({ size: 1000 }),
         adminApi.getCategories({ size: 1000 }),
       ]);
 
-      // 메타데이터 맵 생성
       const groupMetadata = new Map<string, CategoryGroupDto>();
       groupsResponse.content.forEach((group) => {
         groupMetadata.set(group.groupCode, group);
@@ -72,7 +63,6 @@ export const useCategoryStore = create<CategoryStore>((set, get) => ({
         categoryMetadata.set(category.code, category);
       });
 
-      // 데이터 병합: PublicApi 데이터에 AdminApi 메타데이터 추가
       const mergedData: CategoriesDataWithMeta = {
         ...publicData,
         groups: publicData.groups.map((group) => {
@@ -106,7 +96,6 @@ export const useCategoryStore = create<CategoryStore>((set, get) => ({
     }
   },
 
-  // Add a new category to a group
   addCategory: async (groupKey: string, categoryData: { key: string; label: string; icon: string }) => {
     const { groupMetadata, fetchCategories } = get();
     const groupMeta = groupMetadata.get(groupKey);
@@ -120,11 +109,9 @@ export const useCategoryStore = create<CategoryStore>((set, get) => ({
       iconUrl: categoryData.icon,
     });
 
-    // 변경 후 PublicApi 다시 호출
     await fetchCategories();
   },
 
-  // Update an existing category
   updateCategory: async (categoryKey: string, updates: { label?: string; icon?: string }) => {
     const { categoryMetadata, fetchCategories } = get();
     const categoryMeta = categoryMetadata.get(categoryKey);
@@ -139,11 +126,9 @@ export const useCategoryStore = create<CategoryStore>((set, get) => ({
       displayOrder: categoryMeta.displayOrder ?? 0,
     });
 
-    // 변경 후 PublicApi 다시 호출
     await fetchCategories();
   },
 
-  // Delete a category
   deleteCategory: async (categoryKey: string) => {
     const { categoryMetadata, fetchCategories } = get();
     const categoryMeta = categoryMetadata.get(categoryKey);
@@ -155,11 +140,9 @@ export const useCategoryStore = create<CategoryStore>((set, get) => ({
       force: false,
     });
 
-    // 변경 후 PublicApi 다시 호출
     await fetchCategories();
   },
 
-  // Add a new group
   addGroup: async (groupData: { groupKey: string; groupLabel: string; icon: string }) => {
     const { fetchCategories } = get();
 
@@ -170,11 +153,9 @@ export const useCategoryStore = create<CategoryStore>((set, get) => ({
       iconUrl: groupData.icon,
     });
 
-    // 변경 후 PublicApi 다시 호출
     await fetchCategories();
   },
 
-  // Update an existing group
   updateGroup: async (groupKey: string, updates: { groupLabel?: string; icon?: string }) => {
     const { groupMetadata, fetchCategories } = get();
     const groupMeta = groupMetadata.get(groupKey);
@@ -188,11 +169,9 @@ export const useCategoryStore = create<CategoryStore>((set, get) => ({
       displayOrder: groupMeta.displayOrder ?? 0,
     });
 
-    // 변경 후 PublicApi 다시 호출
     await fetchCategories();
   },
 
-  // Delete a group and its categories
   deleteGroup: async (groupKey: string) => {
     const { groupMetadata, fetchCategories } = get();
     const groupMeta = groupMetadata.get(groupKey);
@@ -204,12 +183,10 @@ export const useCategoryStore = create<CategoryStore>((set, get) => ({
       force: true,
     });
 
-    // 변경 후 PublicApi 다시 호출
     await fetchCategories();
   }
 }));
 
-// Legacy compatibility function for ContentCard
 export const categoryStore = () => {
   const store = useCategoryStore.getState();
   return {

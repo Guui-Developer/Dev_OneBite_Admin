@@ -37,10 +37,8 @@ export default function ContentSettings() {
   const [formSelectedType, setFormSelectedType] = useState<string>('code_tip');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  // 다건 삭제를 위한 상태
   const [selectedContents, setSelectedContents] = useState<number[]>([]);
 
-  // 필터 상태
   const [filterCategory, setFilterCategory] = useState<string>('');
   const [searchText, setSearchText] = useState<string>('');
 
@@ -58,12 +56,10 @@ export default function ContentSettings() {
     ? contents
     : contents.filter(c => c.type === activeTab);
 
-  // 카테고리 필터 적용
   if (filterCategory) {
     filteredContents = filteredContents.filter(c => c.tags.includes(filterCategory));
   }
 
-  // 검색 필터 적용
   if (searchText) {
     const lowerSearch = searchText.toLowerCase();
     filteredContents = filteredContents.filter(c =>
@@ -123,7 +119,6 @@ export default function ContentSettings() {
         return;
       }
 
-      // 타입별 필드 수집 (간단한 예시)
       const contentData: any = {
         type: formSelectedType,
         title,
@@ -131,8 +126,6 @@ export default function ContentSettings() {
         createdAt: new Date().toISOString(),
       };
 
-      // 실제로는 각 타입별로 필드를 수집해야 함
-      // 여기서는 간단하게 처리
       const textareas = form.querySelectorAll<HTMLTextAreaElement>('textarea');
       const inputs = form.querySelectorAll<HTMLInputElement>('input[type="text"]');
 
@@ -163,11 +156,9 @@ export default function ContentSettings() {
       }
 
       if (editingContent) {
-        // 수정
         await updateContent(editingContent.id, contentData);
       } else {
-        // 추가
-        contentData.id = Date.now(); // 임시 ID
+        contentData.id = Date.now();
         await addContent(contentData);
       }
 
@@ -191,7 +182,6 @@ export default function ContentSettings() {
     setFormSelectedType(e.target.value);
   };
 
-  // 다건 삭제 관련 핸들러
   const handleContentCheck = (id: number) => {
     setSelectedContents(prev =>
       prev.includes(id)
@@ -508,7 +498,6 @@ export default function ContentSettings() {
         ))}
       </div>
 
-      {/* 필터 섹션 */}
       <div className="mb-4 p-4 bg-gray-800 rounded-lg border border-gray-700 flex items-center gap-4">
         <div className="flex-1">
           <input
@@ -546,7 +535,6 @@ export default function ContentSettings() {
         )}
       </div>
 
-      {/* 다건 삭제 컨트롤 바 */}
       {selectedContents.length > 0 && (
         <div className="mb-4 p-4 bg-blue-600/10 border border-blue-500/30 rounded-lg flex items-center justify-between">
           <span className="text-blue-400 font-medium">
@@ -752,7 +740,6 @@ export default function ContentSettings() {
         </div>
       )}
 
-      {/* 콘텐츠 보기 모달 - 실제 클라이언트 스타일 */}
       {showViewModal && viewingContent && (
         <div
           className="fixed inset-0 bg-black/75 flex items-center justify-center z-50"
@@ -762,7 +749,6 @@ export default function ContentSettings() {
             className="bg-[#0A0A0A] w-[500px] max-h-[90vh] overflow-y-auto rounded-lg"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
             <div className="sticky top-0 bg-[#0A0A0A]/80 backdrop-blur-lg border-b border-[#2D2D2D] px-4 py-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <img src="/logo.svg" alt="Dev OneBite" className="w-8 h-8" />
@@ -778,10 +764,8 @@ export default function ContentSettings() {
               </button>
             </div>
 
-            {/* Content */}
             <div className="p-4 pt-6">
               <Card padding="lg" className="bg-[#1A1A1A] border border-[#2D2D2D]">
-                {/* Type Badge and Meta Info */}
                 <div className="mb-3 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold ${
@@ -804,17 +788,14 @@ export default function ContentSettings() {
                   </div>
                 </div>
 
-                {/* Title */}
                 <h1 className="text-xl font-bold text-white mb-4">
                   {viewingContent.title}
                 </h1>
 
-                {/* Content */}
                 <div className="mb-4">
                   {renderViewContent(viewingContent)}
                 </div>
 
-                {/* Tags */}
                 <div className="flex flex-wrap gap-2">
                   {viewingContent.tags.map((tag: string) => {
                     const category = AVAILABLE_CATEGORIES.find(c => c.key === tag);
@@ -831,7 +812,6 @@ export default function ContentSettings() {
                 </div>
               </Card>
 
-              {/* Action Buttons */}
               <div className="flex gap-3 mt-4">
                 <button
                   className="flex-1 px-4 py-2.5 bg-[#374151] text-[#e5e7eb] rounded-lg font-medium hover:bg-[#4b5563] transition-colors"

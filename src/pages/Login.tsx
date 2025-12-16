@@ -26,7 +26,6 @@ export default function Login() {
 
       console.log('[Login] Response:', response);
 
-      // 직접 토큰 저장
       if (response.accessToken && response.accessExpiresAt) {
         setAuth(response.accessToken, response.accessExpiresAt);
         console.log('[Login] Token saved, navigating to /admin');

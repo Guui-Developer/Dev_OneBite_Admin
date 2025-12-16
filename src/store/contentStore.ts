@@ -20,18 +20,17 @@ const convertContentDtoToLearningData = (dto: ContentDto): LearningData => {
     id: dto.contentId,
     type: dto.type as ContentType,
     title: dto.title,
-    tags: [], // tags는 별도 API로 관리되거나, ContentDto에 추가 필드가 필요
+    tags: [],
     createdAt: dto.createdAt,
   };
 
-  // 타입별로 필요한 필드 추가
   switch (dto.type) {
     case 'code_tip':
       return {
         ...base,
         type: 'code_tip',
         code: dto.code || '',
-        language: 'javascript', // 기본값
+        language: '',
         description: dto.description || '',
       };
     case 'bug_challenge':
@@ -55,7 +54,7 @@ const convertContentDtoToLearningData = (dto: ContentDto): LearningData => {
         type: 'interview',
         question: dto.question || '',
         answer: dto.answer || '',
-        tails: [], // tails는 별도 처리 필요
+        tails: [],
       };
     case 'meme':
       return {
@@ -64,26 +63,15 @@ const convertContentDtoToLearningData = (dto: ContentDto): LearningData => {
         image: dto.imageUrl || '',
         description: dto.description || '',
       };
-    default:
-      // 알 수 없는 타입은 code_tip으로 처리
-      return {
-        ...base,
-        type: 'code_tip',
-        code: dto.code || '',
-        language: 'javascript',
-        description: dto.description || '',
-      };
   }
 };
 
 interface ContentStore {
-  // State
   data: GetLearningDataListData | null;
   isLoading: boolean;
   error: string | null;
   selectedType: ContentType | 'all';
 
-  // Actions
   fetchContents: (params?: { page?: number; size?: number; keyword?: string }) => Promise<void>;
   addContent: (content: LearningData) => Promise<void>;
   updateContent: (id: number, updates: Partial<LearningData>) => Promise<void>;
@@ -93,27 +81,22 @@ interface ContentStore {
 }
 
 export const useContentStore = create<ContentStore>((set, get) => ({
-  // Initial State
   data: null,
   isLoading: false,
   error: null,
   selectedType: 'all',
 
-  // Fetch contents from API (Admin API - 페이지네이션)
   fetchContents: async (params?: { page?: number; size?: number; keyword?: string }) => {
     set({ isLoading: true, error: null });
     try {
       const adminApi = new AdminApi();
       const response = await adminApi.getContentList({
         page: params?.page || 0,
-        size: params?.size || 1000, // 전체 조회
+        size: params?.size || 1000,
         keyword: params?.keyword,
       });
 
-      // ContentDto[]를 LearningData[]로 변환
       const convertedContent = response.content.map(convertContentDtoToLearningData);
-
-      // GetLearningDataListData 형식으로 변환
       const data: GetLearningDataListData = {
         content: convertedContent,
         pagination: {
@@ -135,17 +118,14 @@ export const useContentStore = create<ContentStore>((set, get) => ({
     }
   },
 
-  // Add a new content
   addContent: async (content: LearningData) => {
     const adminApi = new AdminApi();
 
-    // LearningData를 CreateContentRequest로 변환
     const request: any = {
       type: content.type,
       title: content.title,
     };
 
-    // 타입별로 필요한 필드 추가
     switch (content.type) {
       case 'code_tip':
         request.code = (content as any).code;
@@ -171,21 +151,16 @@ export const useContentStore = create<ContentStore>((set, get) => ({
     }
 
     await adminApi.createContent(request);
-
-    // 추가 후 다시 조회
     await get().fetchContents();
   },
 
-  // Update an existing content
   updateContent: async (id: number, updates: Partial<LearningData>) => {
     const adminApi = new AdminApi();
 
-    // updates를 UpdateContentRequest로 변환
     const request: any = {};
 
     if (updates.title) request.title = updates.title;
 
-    // 타입별 필드 처리
     if ('code' in updates) request.code = (updates as any).code;
     if ('description' in updates) request.description = (updates as any).description;
     if ('answer' in updates) request.answer = (updates as any).answer;
@@ -197,11 +172,9 @@ export const useContentStore = create<ContentStore>((set, get) => ({
 
     await adminApi.updateContent(id, request);
 
-    // 수정 후 다시 조회
     await get().fetchContents();
   },
 
-  // Delete a content
   deleteContent: async (id: number) => {
     const adminApi = new AdminApi();
     await adminApi.deleteContent({
@@ -209,16 +182,13 @@ export const useContentStore = create<ContentStore>((set, get) => ({
       force: false,
     });
 
-    // 삭제 후 다시 조회
     await get().fetchContents();
   },
 
-  // Set selected type filter
   setSelectedType: (type: ContentType | 'all') => {
     set({ selectedType: type });
   },
 
-  // Get filtered contents based on selected type
   getFilteredContents: () => {
     const { data, selectedType } = get();
     if (!data) return [];

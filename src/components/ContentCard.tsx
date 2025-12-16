@@ -132,17 +132,14 @@ export default function ContentCard({ content, isBookmarked = false, onToggleBoo
         )}
       </div>
 
-      {/* Title */}
       <h1 className="text-xl font-bold text-white">
         {content.title}
       </h1>
 
-      {/* Render content based on type */}
       <div>
         {renderContentByType(content)}
       </div>
 
-      {/* Tags */}
       <div className="flex flex-wrap gap-2">
         {content.tags.map((tag: string, idx: number) => {
           const categoryInfo = getCategoryInfo(tag);

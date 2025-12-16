@@ -32,7 +32,6 @@ export default function CodeBox({
 
   return (
     <div className={`relative rounded-lg overflow-hidden border border-[#2D2D2D] ${className}`}>
-      {/* Header */}
       {title && (
         <div className="bg-[#1A1A1A] text-[#E0E0E0] px-4 py-0.5 text-sm font-medium flex items-center justify-between border-b border-[#2D2D2D]">
           <span>{title}</span>
@@ -50,7 +49,6 @@ export default function CodeBox({
         </div>
       )}
 
-      {/* Code */}
       <div className="relative">
         {!title && (
           <button

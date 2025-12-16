@@ -3,7 +3,6 @@ import type { MouseEvent } from 'react';
 import { Plus, Edit2, Trash2 } from 'lucide-react';
 import { useCategoryStore } from '@/store/categoryStore';
 
-// Alias for compatibility
 const FiPlus = Plus;
 const FiEdit2 = Edit2;
 const FiTrash2 = Trash2;
@@ -25,7 +24,6 @@ export default function CategoryManagement() {
   const [showGroupModal, setShowGroupModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
 
-  // 다건 삭제를 위한 상태
   const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
@@ -99,13 +97,11 @@ export default function CategoryManagement() {
       }
 
       if (editingGroupData) {
-        // 수정
         await updateGroup(editingGroup!, {
           groupLabel,
           icon: iconUrl,
         });
       } else {
-        // 추가
         await addGroup({
           groupKey,
           groupLabel,
@@ -147,13 +143,11 @@ export default function CategoryManagement() {
       }
 
       if (editingCategoryData) {
-        // 수정
         await updateCategory(editingCategory!, {
           label: categoryLabel,
           icon: iconUrl,
         });
       } else {
-        // 추가
         await addCategory(targetGroupKey, {
           key: categoryKey,
           label: categoryLabel,
@@ -169,7 +163,6 @@ export default function CategoryManagement() {
     }
   };
 
-  // 그룹 체크박스 관련 핸들러
   const handleGroupCheck = (groupKey: string) => {
     setSelectedGroups(prev =>
       prev.includes(groupKey)
@@ -203,7 +196,6 @@ export default function CategoryManagement() {
     }
   };
 
-  // 카테고리 체크박스 관련 핸들러
   const handleCategoryCheck = (categoryKey: string) => {
     setSelectedCategories(prev =>
       prev.includes(categoryKey)
@@ -257,7 +249,6 @@ export default function CategoryManagement() {
       </div>
 
       <div className="flex gap-6">
-        {/* 좌측: 그룹 목록 */}
         <div className="flex-grow-[1] bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold text-gray-50 m-0">그룹</h2>
@@ -269,7 +260,6 @@ export default function CategoryManagement() {
               <FiPlus />
             </button>
           </div>
-          {/* 다건 삭제 컨트롤 */}
           <div className="flex items-center justify-between mb-4 p-3 bg-gray-700 rounded-lg border border-gray-600">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -348,7 +338,6 @@ export default function CategoryManagement() {
           </div>
         </div>
 
-        {/* 우측: 카테고리 목록 */}
         <div className="flex-grow-[2] bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold text-gray-50 m-0">{selectedGroupData?.groupLabel} 카테고리</h2>
@@ -360,7 +349,6 @@ export default function CategoryManagement() {
               <FiPlus />
             </button>
           </div>
-          {/* 다건 삭제 컨트롤 */}
           <div className="flex items-center justify-between mb-4 p-3 bg-gray-700 rounded-lg border border-gray-600">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -433,7 +421,6 @@ export default function CategoryManagement() {
         </div>
       </div>
 
-      {/* 그룹 모달 */}
       {showGroupModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowGroupModal(false)}>
           <div className="bg-gray-800 rounded-lg shadow-2xl w-full max-w-md border border-gray-700" onClick={(e) => e.stopPropagation()}>
@@ -500,7 +487,6 @@ export default function CategoryManagement() {
         </div>
       )}
 
-      {/* 카테고리 모달 */}
       {showCategoryModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowCategoryModal(false)}>
           <div className="bg-gray-800 rounded-lg shadow-2xl w-full max-w-md border border-gray-700" onClick={(e) => e.stopPropagation()}>

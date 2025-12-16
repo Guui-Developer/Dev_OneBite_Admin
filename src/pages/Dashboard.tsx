@@ -1,5 +1,4 @@
 export default function Dashboard() {
-  // 주요 통계
   const mainStats = [
     { title: 'Google Play 다운로드', value: '12,345', icon: '🤖', color: '#48bb78', trend: '+12%' },
     { title: 'App Store 다운로드', value: '8,901', icon: '🍎', color: '#667eea', trend: '+8%' },
@@ -9,7 +8,6 @@ export default function Dashboard() {
     { title: '오늘 신규 콘텐츠', value: '8', icon: '✨', color: '#10b981', trend: '' },
   ];
 
-  // 콘텐츠 타입별 통계
   const contentStats = [
     { type: '코드 팁', count: 89, icon: '💡', color: '#3b82f6' },
     { type: '버그 챌린지', count: 45, icon: '🐛', color: '#ef4444' },
@@ -18,7 +16,6 @@ export default function Dashboard() {
     { type: '밈', count: 36, icon: '😄', color: '#ec4899' },
   ];
 
-  // 시스템 상태
   const systemStatus = [
     { name: '서버 상태', status: '정상', value: 'Running', statusType: 'success' },
     { name: 'API 응답시간', status: '양호', value: '45ms', statusType: 'success' },
@@ -28,7 +25,6 @@ export default function Dashboard() {
     <div className="max-w-[1400px]">
       <h1 className="mb-8 text-gray-50 text-3xl font-bold">대시보드</h1>
 
-      {/* 주요 통계 카드 */}
       <div className="grid grid-cols-6 gap-4 mb-8">
         {mainStats.map((stat, index) => (
           <div
@@ -55,7 +51,6 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-2 gap-6">
-        {/* 콘텐츠 타입별 통계 */}
         <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
           <h2 className="m-0 mb-6 text-gray-50 text-xl font-semibold">콘텐츠 타입별 통계</h2>
           <div className="flex flex-col gap-3">
@@ -82,7 +77,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* 시스템 상태 */}
         <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
           <h2 className="m-0 mb-6 text-gray-50 text-xl font-semibold">시스템 상태</h2>
           <div className="flex flex-col gap-4">
