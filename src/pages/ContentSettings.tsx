@@ -31,6 +31,7 @@ export default function ContentSettings() {
   const [filterCategory, setFilterCategory] = useState<string>('');
   const [searchText, setSearchText] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(0);
+  const [uploadProgress, setUploadProgress] = useState<{ current: number; total: number } | null>(null);
   const pageSize = 100;
 
   useEffect(() => {
@@ -193,6 +194,8 @@ export default function ContentSettings() {
     }
 
     setIsSubmitting(true);
+    setUploadProgress(null);
+
     try {
       const jsonData = JSON.parse(jsonText);
       const contentsArray = Array.isArray(jsonData) ? jsonData : [jsonData];
@@ -202,10 +205,14 @@ export default function ContentSettings() {
         return;
       }
 
+      setUploadProgress({ current: 0, total: contentsArray.length });
+
       for (let i = 0; i < contentsArray.length; i++) {
         await addContent(contentsArray[i]);
+        setUploadProgress({ current: i + 1, total: contentsArray.length });
+
         if (i < contentsArray.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 500));
+          await new Promise(resolve => setTimeout(resolve, 250));
         }
       }
 
@@ -214,12 +221,14 @@ export default function ContentSettings() {
       alert(`${contentsArray.length}개의 콘텐츠가 추가되었습니다.`);
       setShowJsonUploadModal(false);
       setJsonText('');
+      setUploadProgress(null);
     } catch (error) {
       if (error instanceof SyntaxError) {
         alert('올바른 JSON 형식이 아닙니다.');
       } else {
         alert(error instanceof Error ? error.message : '업로드 실패');
       }
+      setUploadProgress(null);
     } finally {
       setIsSubmitting(false);
     }
@@ -373,6 +382,7 @@ export default function ContentSettings() {
                 rows={6}
                 placeholder="const example = () => {...}"
                 className={textareaClass}
+                defaultValue={editingContent && 'code' in editingContent ? editingContent.code : ''}
               />
             </div>
             <div>
@@ -381,6 +391,7 @@ export default function ContentSettings() {
                 type="text"
                 placeholder="예: JavaScript"
                 className={inputClass}
+                defaultValue={editingContent && 'language' in editingContent ? editingContent.language : ''}
               />
             </div>
             <div>
@@ -389,6 +400,7 @@ export default function ContentSettings() {
                 rows={3}
                 placeholder="코드에 대한 설명을 입력하세요"
                 className={textareaClass}
+                defaultValue={editingContent && 'description' in editingContent ? editingContent.description : ''}
               />
             </div>
           </>
@@ -403,6 +415,7 @@ export default function ContentSettings() {
                 rows={6}
                 placeholder="버그가 있는 코드를 입력하세요"
                 className={textareaClass}
+                defaultValue={editingContent && 'code' in editingContent ? editingContent.code : ''}
               />
             </div>
             <div>
@@ -411,6 +424,7 @@ export default function ContentSettings() {
                 rows={4}
                 placeholder="버그의 원인과 해결 방법을 설명하세요"
                 className={textareaClass}
+                defaultValue={editingContent && 'answer' in editingContent ? editingContent.answer : ''}
               />
             </div>
           </>
@@ -425,6 +439,7 @@ export default function ContentSettings() {
                 rows={5}
                 placeholder="개선 전 코드"
                 className={textareaClass}
+                defaultValue={editingContent && 'before' in editingContent ? editingContent.before : ''}
               />
             </div>
             <div>
@@ -433,6 +448,7 @@ export default function ContentSettings() {
                 rows={5}
                 placeholder="개선 후 코드"
                 className={textareaClass}
+                defaultValue={editingContent && 'after' in editingContent ? editingContent.after : ''}
               />
             </div>
             <div>
@@ -441,6 +457,7 @@ export default function ContentSettings() {
                 rows={3}
                 placeholder="개선 사항에 대한 설명"
                 className={textareaClass}
+                defaultValue={editingContent && 'feedback' in editingContent ? editingContent.feedback : ''}
               />
             </div>
           </>
@@ -455,6 +472,7 @@ export default function ContentSettings() {
                 rows={3}
                 placeholder="면접 질문을 입력하세요"
                 className={textareaClass}
+                defaultValue={editingContent && 'question' in editingContent ? editingContent.question : ''}
               />
             </div>
             <div>
@@ -463,6 +481,7 @@ export default function ContentSettings() {
                 rows={5}
                 placeholder="모범 답변을 입력하세요"
                 className={textareaClass}
+                defaultValue={editingContent && 'answer' in editingContent ? editingContent.answer : ''}
               />
             </div>
             <div>
@@ -471,6 +490,7 @@ export default function ContentSettings() {
                 rows={3}
                 placeholder="추가 꼬리 질문을 한 줄씩 입력하세요"
                 className={textareaClass}
+                defaultValue={editingContent && 'tails' in editingContent ? editingContent.tails.join('\n') : ''}
               />
               <span className="text-gray-500 text-xs mt-1 block">각 줄마다 하나의 꼬리 질문</span>
             </div>
@@ -486,6 +506,7 @@ export default function ContentSettings() {
                 type="text"
                 placeholder="https://example.com/image.jpg"
                 className={inputClass}
+                defaultValue={editingContent && 'image' in editingContent ? editingContent.image : ''}
               />
             </div>
             <div>
@@ -494,6 +515,7 @@ export default function ContentSettings() {
                 rows={3}
                 placeholder="밈에 대한 설명"
                 className={textareaClass}
+                defaultValue={editingContent && 'description' in editingContent ? editingContent.description : ''}
               />
             </div>
           </>
@@ -648,7 +670,14 @@ export default function ContentSettings() {
                 </td>
                 <td className="p-4 text-gray-200 text-sm border-b border-gray-700">{content.id}</td>
                 <td className="p-4 text-gray-200 text-sm border-b border-gray-700">
-                  <span className="px-3 py-1 bg-yellow-500/20 text-yellow-400 rounded-xl text-xs font-medium">
+                  <span className={`px-3 py-1 rounded-xl text-xs font-medium ${
+                    content.type === 'code_tip' ? 'bg-blue-500/20 text-blue-400' :
+                    content.type === 'bug_challenge' ? 'bg-red-500/20 text-red-400' :
+                    content.type === 'code_review' ? 'bg-purple-500/20 text-purple-400' :
+                    content.type === 'interview' ? 'bg-green-500/20 text-green-400' :
+                    content.type === 'meme' ? 'bg-yellow-500/20 text-yellow-400' :
+                    'bg-gray-500/20 text-gray-400'
+                  }`}>
                     {content.type}
                   </span>
                 </td>
@@ -993,12 +1022,39 @@ export default function ContentSettings() {
                 placeholder="JSON 배열을 입력하세요..."
                 value={jsonText}
                 onChange={(e) => setJsonText(e.target.value)}
+                disabled={isSubmitting}
               />
+              {uploadProgress && (
+                <div className="mt-4 p-4 bg-gray-700 rounded-lg border border-gray-600">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-gray-300 text-sm font-medium">
+                      업로드 진행 중...
+                    </span>
+                    <span className="text-blue-400 text-sm font-semibold">
+                      {uploadProgress.current} / {uploadProgress.total}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-600 rounded-full h-3 overflow-hidden">
+                    <div
+                      className="bg-gradient-to-r from-blue-500 to-green-500 h-full transition-all duration-300 ease-out flex items-center justify-center"
+                      style={{ width: `${(uploadProgress.current / uploadProgress.total) * 100}%` }}
+                    >
+                      <span className="text-white text-xs font-bold">
+                        {Math.round((uploadProgress.current / uploadProgress.total) * 100)}%
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-gray-400 text-xs mt-2">
+                    각 콘텐츠를 서버에 업로드하는 중입니다. 잠시만 기다려주세요.
+                  </p>
+                </div>
+              )}
             </div>
             <div className="flex gap-3 p-6 border-t border-gray-700">
               <button
-                className="flex-1 py-3 bg-gray-700 text-gray-200 rounded-lg font-semibold hover:bg-gray-600 transition-colors"
+                className="flex-1 py-3 bg-gray-700 text-gray-200 rounded-lg font-semibold hover:bg-gray-600 transition-colors disabled:opacity-50"
                 onClick={() => setShowJsonUploadModal(false)}
+                disabled={isSubmitting}
               >
                 취소
               </button>

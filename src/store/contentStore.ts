@@ -33,7 +33,7 @@ const convertContentDtoToLearningData = (dto: ContentDto): LearningData => {
         id: dto.contentId,
         type: dto.type as ContentType,
         title: dto.title,
-        tags: [],
+        tags: dto.tags || [],
         createdAt: dto.createdAt,
     };
 
@@ -140,6 +140,7 @@ export const useContentStore = create<ContentStore>((set, get) => ({
         const request: CreateContentRequest = {
             type: content.type,
             title: content.title,
+            tags: content.tags,
         };
 
         switch (content.type) {
@@ -175,6 +176,7 @@ export const useContentStore = create<ContentStore>((set, get) => ({
         const request: UpdateContentRequest = {};
 
         if (updates.title) request.title = updates.title;
+        if (updates.tags) request.tags = updates.tags;
 
         if ('code' in updates && updates.code !== undefined) request.code = updates.code;
         if ('description' in updates && updates.description !== undefined) request.description = updates.description;

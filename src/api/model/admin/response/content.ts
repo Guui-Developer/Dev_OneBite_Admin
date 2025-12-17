@@ -10,6 +10,7 @@ export interface ContentDto {
   feedback: string | null;
   imageUrl: string | null;
   question: string | null;
+  tags: string[];
   views: number;
   bookmarks: number;
   isActive: boolean;
