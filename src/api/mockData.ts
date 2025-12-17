@@ -1,5 +1,5 @@
-import type { CategoriesData } from './model/response/category';
-import type { GetLearningDataListData, LearningData } from './model/response/content_types';
+import type { CategoriesData } from './model/public/response/category';
+import type { GetLearningDataListData, LearningData } from './model/public/response/content_types';
 
 // Mock Categories Data
 export const mockCategoriesData: CategoriesData = {

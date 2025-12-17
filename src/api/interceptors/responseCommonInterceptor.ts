@@ -1,5 +1,5 @@
 import type { AxiosInstance, AxiosResponse } from "axios";
-import type { ApiResponse } from "../model/response/common";
+import type { ApiResponse } from "../model/public/response/common";
 
 export function responseCommonInterceptor(instance: AxiosInstance) {
     instance.interceptors.response.use(

@@ -1,3 +1,5 @@
+import type { Content } from "./content_types";
+
 export type { Content } from "./content_types";
 
 /**

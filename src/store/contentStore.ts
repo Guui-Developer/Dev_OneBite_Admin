@@ -76,6 +76,8 @@ const convertContentDtoToLearningData = (dto: ContentDto): LearningData => {
                 image: dto.imageUrl || '',
                 description: dto.description || '',
             };
+        default:
+            throw new Error(`Unknown content type: ${dto.type}`);
     }
 };
 

@@ -1,7 +1,7 @@
 import type { AxiosRequestConfig, AxiosError, AxiosInstance } from "axios";
 import { publicAxiosInstance, adminAxiosInstance } from "./axiosInstance";
 import { ApiError } from "./ApiError";
-import type { FailureResponse } from "./model/response/common";
+import type { FailureResponse } from "./model/public/response/common";
 
 type Mapper<T> = (json: unknown) => T;
 

@@ -28,8 +28,8 @@ export interface CreateContentRequest {
  * 콘텐츠 수정 요청
  */
 export interface UpdateContentRequest {
-  type: string;
-  title: string;
+  type?: string;
+  title?: string;
   code?: string;
   description?: string;
   answer?: string;

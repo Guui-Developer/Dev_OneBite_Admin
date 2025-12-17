@@ -8,17 +8,25 @@ export * from "./constants/endpoints";
 export { PublicApi } from "./modules/PublicApi";
 export { AdminApi } from "./modules/AdminApi";
 
-export type * from "./model/request/auth";
-export type * from "./model/request/category";
-export type * from "./model/request/group";
-export type * from "./model/request/content";
+// Admin Request Types
+export type * from "./model/admin/request/auth";
+export type * from "./model/admin/request/category";
+export type * from "./model/admin/request/group";
+export type * from "./model/admin/request/content";
 
-export type * from "./model/response/common";
-export type * from "./model/response/page";
-export type * from "./model/response/error";
-export type * from "./model/response/auth";
-export type * from "./model/response/category";
-export type * from "./model/response/admin-category";
-export type * from "./model/response/group";
-export type * from "./model/response/content";
-export type * from "./model/response/admin-content";
+// Public Request Types
+export type * from "./model/public/request/content";
+
+// Public Response Types
+export type * from "./model/public/response/common";
+export type * from "./model/public/response/page";
+export type * from "./model/public/response/error";
+export type * from "./model/public/response/auth";
+export type * from "./model/public/response/category";
+export type * from "./model/public/response/group";
+export type * from "./model/public/response/content";
+export type * from "./model/public/response/content_types";
+
+// Admin Response Types
+export type * from "./model/admin/response/category";
+export type * from "./model/admin/response/content";
