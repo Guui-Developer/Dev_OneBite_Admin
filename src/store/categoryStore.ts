@@ -35,6 +35,8 @@ interface CategoryStore {
   updateGroup: (groupKey: string, updates: { groupLabel?: string; icon?: string }) => Promise<void>;
   deleteGroup: (groupKey: string) => Promise<void>;
   deleteGroups: (groupKeys: string[]) => Promise<void>;
+  reorderGroups: (groupIds: number[]) => Promise<void>;
+  reorderCategories: (categoryIds: number[]) => Promise<void>;
 }
 
 export const useCategoryStore = create<CategoryStore>((set, get) => ({
@@ -124,8 +126,7 @@ export const useCategoryStore = create<CategoryStore>((set, get) => ({
       categoryGroupId: categoryMeta.categoryGroupId,
       code: categoryMeta.code,
       label: updates.label ?? categoryMeta.label,
-      iconUrl: updates.icon ?? categoryMeta.iconUrl ?? undefined,
-      displayOrder: categoryMeta.displayOrder ?? 0,
+      iconUrl: updates.icon ?? (categoryMeta.iconUrl || ''),
     });
 
     await fetchCategories();
@@ -139,7 +140,6 @@ export const useCategoryStore = create<CategoryStore>((set, get) => ({
     const adminApi = new AdminApi();
     await adminApi.deleteCategories({
       ids: [categoryMeta.categoryId],
-      force: false,
     });
   },
 
@@ -159,7 +159,6 @@ export const useCategoryStore = create<CategoryStore>((set, get) => ({
     const adminApi = new AdminApi();
     await adminApi.deleteCategories({
       ids,
-      force: false,
     });
   },
 
@@ -183,10 +182,10 @@ export const useCategoryStore = create<CategoryStore>((set, get) => ({
 
     const adminApi = new AdminApi();
     await adminApi.updateCategoryGroup(groupMeta.groupId, {
+      groupId: groupMeta.groupId,
       groupCode: groupMeta.groupCode,
       groupLabel: updates.groupLabel ?? groupMeta.groupLabel,
-      iconUrl: updates.icon ?? groupMeta.iconUrl ?? undefined,
-      displayOrder: groupMeta.displayOrder ?? 0,
+      iconUrl: updates.icon ?? (groupMeta.iconUrl || ''),
     });
 
     await fetchCategories();
@@ -200,7 +199,6 @@ export const useCategoryStore = create<CategoryStore>((set, get) => ({
     const adminApi = new AdminApi();
     await adminApi.deleteCategoryGroups({
       ids: [groupMeta.groupId],
-      force: false,
     });
   },
 
@@ -220,8 +218,29 @@ export const useCategoryStore = create<CategoryStore>((set, get) => ({
     const adminApi = new AdminApi();
     await adminApi.deleteCategoryGroups({
       ids,
-      force: false,
     });
+  },
+
+  reorderGroups: async (groupIds: number[]) => {
+    const { fetchCategories } = get();
+    const adminApi = new AdminApi();
+
+    await adminApi.reorderCategoryGroups({
+      categoryGroupIds: groupIds,
+    });
+
+    await fetchCategories();
+  },
+
+  reorderCategories: async (categoryIds: number[]) => {
+    const { fetchCategories } = get();
+    const adminApi = new AdminApi();
+
+    await adminApi.reorderCategories({
+      categoryIds,
+    });
+
+    await fetchCategories();
   }
 }));
 

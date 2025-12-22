@@ -6,12 +6,14 @@ import type {
   CreateCategoryGroupRequest,
   UpdateCategoryGroupRequest,
   DeleteCategoryGroupRequest,
+  ReorderCategoryGroupsRequest,
 } from "../model/admin/request/group";
 import type { CategoryGroupDto } from "../model/public/response/group";
 import type {
   CreateCategoryRequest,
   UpdateCategoryRequest,
   DeleteCategoryRequest,
+  ReorderCategoriesRequest,
 } from "../model/admin/request/category";
 import type { CategoryDto } from "../model/admin/response/category";
 import type {
@@ -110,6 +112,18 @@ export class AdminApi {
     });
   }
 
+  /**
+   * 카테고리 그룹 순서 변경
+   * PUT /group/reorder
+   */
+  async reorderCategoryGroups(request: ReorderCategoryGroupsRequest): Promise<void> {
+    await adminHttpClient.put(
+      GROUP_ENDPOINTS.REORDER,
+      request,
+      () => undefined
+    );
+  }
+
   // ==================== 카테고리 API ====================
 
   /**
@@ -174,6 +188,18 @@ export class AdminApi {
     await adminHttpClient.delete(CATEGORY_ENDPOINTS.BASE, {
       data: request,
     });
+  }
+
+  /**
+   * 카테고리 순서 변경
+   * PUT /categories/reorder
+   */
+  async reorderCategories(request: ReorderCategoriesRequest): Promise<void> {
+    await adminHttpClient.put(
+      CATEGORY_ENDPOINTS.REORDER,
+      request,
+      () => undefined
+    );
   }
 
   // ==================== 콘텐츠 API ====================

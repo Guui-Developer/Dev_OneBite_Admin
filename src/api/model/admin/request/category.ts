@@ -7,10 +7,9 @@
  */
 export interface CreateCategoryRequest {
   categoryGroupId: number;
-  code: string;
   label: string;
-  iconUrl?: string;
-  description?: string;
+  code: string;
+  iconUrl: string;
 }
 
 /**
@@ -18,10 +17,9 @@ export interface CreateCategoryRequest {
  */
 export interface UpdateCategoryRequest {
   categoryGroupId: number;
-  code: string;
   label: string;
-  iconUrl?: string;
-  displayOrder: number;
+  code: string;
+  iconUrl: string;
 }
 
 /**
@@ -29,5 +27,11 @@ export interface UpdateCategoryRequest {
  */
 export interface DeleteCategoryRequest {
   ids: number[];
-  force: boolean;
+}
+
+/**
+ * 카테고리 순서 변경 요청
+ */
+export interface ReorderCategoriesRequest {
+  categoryIds: number[];
 }

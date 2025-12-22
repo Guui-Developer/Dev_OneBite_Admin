@@ -15,6 +15,7 @@ export const AUTH_ENDPOINTS = {
 export const GROUP_ENDPOINTS = {
   BASE: "/group",
   BY_ID: (groupId: number) => `/group/${groupId}`,
+  REORDER: "/group/reorder",
 } as const;
 
 /**
@@ -23,6 +24,7 @@ export const GROUP_ENDPOINTS = {
 export const CATEGORY_ENDPOINTS = {
   BASE: "/categories",
   BY_ID: (categoryId: number) => `/categories/${categoryId}`,
+  REORDER: "/categories/reorder",
 } as const;
 
 /**

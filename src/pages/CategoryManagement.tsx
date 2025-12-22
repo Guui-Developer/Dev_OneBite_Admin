@@ -1,23 +1,210 @@
 import { useState, useEffect } from 'react';
 import type { MouseEvent } from 'react';
-import { Plus, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Edit2, Trash2, GripVertical } from 'lucide-react';
 import { useCategoryStore } from '@/store/categoryStore';
+import type { CategoryGroup, Category } from '@/api/model/public/response/category';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 const FiPlus = Plus;
 const FiEdit2 = Edit2;
 const FiTrash2 = Trash2;
 
+interface CategoryGroupWithMeta extends CategoryGroup {
+  groupId?: number;
+  categories: CategoryWithMeta[];
+}
+
+interface CategoryWithMeta extends Category {
+  categoryId?: number;
+  categoryGroupId?: number;
+  groupKey?: string;
+}
+
+interface SortableGroupItemProps {
+  group: CategoryGroupWithMeta;
+  isSelected: boolean;
+  onSelect: () => void;
+  onCheck: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isChecked: boolean;
+  onEdit: () => void;
+  onDelete: () => void;
+}
+
+function SortableGroupItem({ group, isSelected, onSelect, onCheck, isChecked, onEdit, onDelete }: SortableGroupItemProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: group.groupKey });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`p-4 rounded-lg border transition-all ${
+        isSelected
+          ? 'bg-blue-600/20 border-blue-500'
+          : 'bg-gray-700 border-gray-600 hover:bg-gray-600'
+      }`}
+    >
+      <div className="flex items-center gap-3 mb-2">
+        <div {...attributes} {...listeners} className="cursor-move text-gray-400 hover:text-gray-200">
+          <GripVertical size={20} />
+        </div>
+        <input
+          type="checkbox"
+          checked={isChecked}
+          onChange={onCheck}
+          onClick={(e) => e.stopPropagation()}
+          className="w-4 h-4 rounded border-gray-500 text-blue-600 focus:ring-blue-500 focus:ring-offset-gray-800 cursor-pointer"
+        />
+        <img
+          src={group.icon}
+          alt={group.groupLabel}
+          className="w-8 h-8 cursor-pointer"
+          onClick={onSelect}
+        />
+        <div className="flex-1 cursor-pointer" onClick={onSelect}>
+          <h3 className="text-gray-50 font-semibold m-0 mb-1">{group.groupLabel}</h3>
+          <span className="text-gray-400 text-sm">{group.groupKey}</span>
+        </div>
+        <span className="px-3 py-1 bg-gray-800 rounded-full text-gray-300 text-sm font-semibold">
+          {group.categories.length}
+        </span>
+      </div>
+      <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+        <button
+          className="flex-1 px-3 py-2 rounded bg-gray-600 hover:bg-gray-500 text-gray-200 transition-colors flex items-center justify-center gap-2"
+          onClick={onEdit}
+        >
+          <FiEdit2 size={14} />
+          <span className="text-sm">수정</span>
+        </button>
+        <button
+          className="flex-1 px-3 py-2 rounded bg-red-600/20 hover:bg-red-600/30 text-red-400 transition-colors flex items-center justify-center gap-2"
+          onClick={onDelete}
+        >
+          <FiTrash2 size={14} />
+          <span className="text-sm">삭제</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+interface SortableCategoryItemProps {
+  category: CategoryWithMeta;
+  isChecked: boolean;
+  onCheck: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}
+
+function SortableCategoryItem({ category, isChecked, onCheck, onEdit, onDelete }: SortableCategoryItemProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: category.key });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="bg-gray-700 p-4 rounded-lg border border-gray-600 hover:bg-gray-600 transition-colors">
+      <div className="flex items-center gap-3 mb-3">
+        <div {...attributes} {...listeners} className="cursor-move text-gray-400 hover:text-gray-200">
+          <GripVertical size={18} />
+        </div>
+        <input
+          type="checkbox"
+          checked={isChecked}
+          onChange={onCheck}
+          className="w-4 h-4 rounded border-gray-500 text-blue-600 focus:ring-blue-500 focus:ring-offset-gray-800 cursor-pointer"
+        />
+        <img src={category.icon} alt={category.label} className="w-10 h-10" />
+        <div className="flex-1">
+          <h3 className="text-gray-50 font-semibold m-0 mb-1">{category.label}</h3>
+          <span className="text-gray-400 text-sm">{category.key}</span>
+        </div>
+        <span className="px-2 py-1 bg-gray-800 rounded text-gray-300 text-sm font-semibold">{category.count}</span>
+      </div>
+      <div className="flex gap-2">
+        <button
+          className="flex-1 px-3 py-2 rounded bg-gray-600 hover:bg-gray-500 text-gray-200 transition-colors flex items-center justify-center gap-2"
+          onClick={onEdit}
+        >
+          <FiEdit2 size={14} />
+          <span className="text-sm">수정</span>
+        </button>
+        <button
+          className="flex-1 px-3 py-2 rounded bg-red-600/20 hover:bg-red-600/30 text-red-400 transition-colors flex items-center justify-center gap-2"
+          onClick={onDelete}
+        >
+          <FiTrash2 size={14} />
+          <span className="text-sm">삭제</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function CategoryManagement() {
-  const { data, isLoading, fetchCategories, deleteCategory, deleteCategories, deleteGroup, deleteGroups, addCategory, updateCategory, addGroup, updateGroup } = useCategoryStore();
+  const { data, isLoading, fetchCategories, deleteCategory, deleteCategories, deleteGroup, deleteGroups, addCategory, updateCategory, addGroup, updateGroup, reorderGroups, reorderCategories } = useCategoryStore();
 
   const [selectedGroup, setSelectedGroup] = useState<string>('common');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // 로컬 상태로 순서 관리
+  const [localGroups, setLocalGroups] = useState<CategoryGroupWithMeta[]>([]);
+  const [hasGroupChanges, setHasGroupChanges] = useState(false);
+  const [hasCategoryChanges, setHasCategoryChanges] = useState(false);
 
   useEffect(() => {
     fetchCategories();
   }, [fetchCategories]);
 
-  const groups = data?.groups || [];
+  const serverGroups = data?.groups || [];
+
+  // 서버 데이터가 변경되면 로컬 상태 업데이트
+  useEffect(() => {
+    setLocalGroups(serverGroups);
+    setHasGroupChanges(false);
+    setHasCategoryChanges(false);
+  }, [serverGroups]);
+
+  const groups = localGroups;
   const categories = groups.flatMap(g => g.categories.map(c => ({ ...c, groupKey: g.groupKey })));
   const [editingGroup, setEditingGroup] = useState<string | null>(null);
   const [editingCategory, setEditingCategory] = useState<string | null>(null);
@@ -29,6 +216,99 @@ export default function CategoryManagement() {
 
   const selectedGroupData = groups.find(g => g.groupKey === selectedGroup);
   const filteredCategories = categories.filter(c => c.groupKey === selectedGroup);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleGroupDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = groups.findIndex((g) => g.groupKey === active.id);
+      const newIndex = groups.findIndex((g) => g.groupKey === over.id);
+
+      const newGroups = arrayMove(groups, oldIndex, newIndex);
+      setLocalGroups(newGroups);
+      setHasGroupChanges(true);
+    }
+  };
+
+  const handleCategoryDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = filteredCategories.findIndex((c) => c.key === active.id);
+      const newIndex = filteredCategories.findIndex((c) => c.key === over.id);
+
+      const newCategories = arrayMove(filteredCategories, oldIndex, newIndex);
+
+      // 로컬 그룹 상태 업데이트
+      const updatedGroups = groups.map(g => {
+        if (g.groupKey === selectedGroup) {
+          return {
+            ...g,
+            categories: newCategories.filter(c => c.groupKey === selectedGroup) as CategoryWithMeta[]
+          };
+        }
+        return g;
+      });
+
+      setLocalGroups(updatedGroups);
+      setHasCategoryChanges(true);
+    }
+  };
+
+  const handleSaveGroupOrder = async () => {
+    const groupIds = groups
+      .map(g => g.groupId)
+      .filter((id): id is number => id !== undefined);
+
+    setIsSubmitting(true);
+    try {
+      await reorderGroups(groupIds);
+      setHasGroupChanges(false);
+      alert('그룹 순서가 저장되었습니다.');
+    } catch (error) {
+      alert(error instanceof Error ? error.message : '순서 변경 실패');
+      setLocalGroups(serverGroups);
+      setHasGroupChanges(false);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSaveCategoryOrder = async () => {
+    const categoryIds = filteredCategories
+      .map(c => c.categoryId)
+      .filter((id): id is number => id !== undefined);
+
+    setIsSubmitting(true);
+    try {
+      await reorderCategories(categoryIds);
+      setHasCategoryChanges(false);
+      alert('카테고리 순서가 저장되었습니다.');
+    } catch (error) {
+      alert(error instanceof Error ? error.message : '순서 변경 실패');
+      setLocalGroups(serverGroups);
+      setHasCategoryChanges(false);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCancelGroupChanges = () => {
+    setLocalGroups(serverGroups);
+    setHasGroupChanges(false);
+  };
+
+  const handleCancelCategoryChanges = () => {
+    setLocalGroups(serverGroups);
+    setHasCategoryChanges(false);
+  };
 
   const handleAddGroup = () => {
     setEditingGroup(null);
@@ -282,60 +562,55 @@ export default function CategoryManagement() {
               </button>
             )}
           </div>
-          <div className="flex flex-col gap-3">
-            {groups.map((group) => (
-              <div
-                key={group.groupKey}
-                className={`p-4 rounded-lg border transition-all ${
-                  selectedGroup === group.groupKey
-                    ? 'bg-blue-600/20 border-blue-500'
-                    : 'bg-gray-700 border-gray-600 hover:bg-gray-600'
-                }`}
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <input
-                    type="checkbox"
-                    checked={selectedGroups.includes(group.groupKey)}
-                    onChange={(e) => {
+          {hasGroupChanges && (
+            <div className="mb-4 p-3 bg-blue-600/10 border border-blue-500/30 rounded-lg flex items-center justify-between">
+              <span className="text-blue-400 text-sm font-medium">순서가 변경되었습니다</span>
+              <div className="flex gap-2">
+                <button
+                  className="px-3 py-1.5 bg-gray-600 hover:bg-gray-500 text-white text-sm rounded-lg transition-colors"
+                  onClick={handleCancelGroupChanges}
+                  disabled={isSubmitting}
+                >
+                  취소
+                </button>
+                <button
+                  className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors disabled:opacity-50"
+                  onClick={handleSaveGroupOrder}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? '저장 중...' : '저장'}
+                </button>
+              </div>
+            </div>
+          )}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleGroupDragEnd}
+          >
+            <SortableContext
+              items={groups.map(g => g.groupKey)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="flex flex-col gap-3">
+                {groups.map((group) => (
+                  <SortableGroupItem
+                    key={group.groupKey}
+                    group={group}
+                    isSelected={selectedGroup === group.groupKey}
+                    onSelect={() => setSelectedGroup(group.groupKey)}
+                    onCheck={(e) => {
                       e.stopPropagation();
                       handleGroupCheck(group.groupKey);
                     }}
-                    onClick={(e) => e.stopPropagation()}
-                    className="w-4 h-4 rounded border-gray-500 text-blue-600 focus:ring-blue-500 focus:ring-offset-gray-800 cursor-pointer"
+                    isChecked={selectedGroups.includes(group.groupKey)}
+                    onEdit={() => handleEditGroup(group.groupKey)}
+                    onDelete={() => handleDeleteGroup(group.groupKey)}
                   />
-                  <img
-                    src={group.icon}
-                    alt={group.groupLabel}
-                    className="w-8 h-8 cursor-pointer"
-                    onClick={() => setSelectedGroup(group.groupKey)}
-                  />
-                  <div className="flex-1 cursor-pointer" onClick={() => setSelectedGroup(group.groupKey)}>
-                    <h3 className="text-gray-50 font-semibold m-0 mb-1">{group.groupLabel}</h3>
-                    <span className="text-gray-400 text-sm">{group.groupKey}</span>
-                  </div>
-                  <span className="px-3 py-1 bg-gray-800 rounded-full text-gray-300 text-sm font-semibold">
-                    {group.categories.length}
-                  </span>
-                </div>
-                <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-                  <button
-                    className="flex-1 px-3 py-2 rounded bg-gray-600 hover:bg-gray-500 text-gray-200 transition-colors flex items-center justify-center gap-2"
-                    onClick={() => handleEditGroup(group.groupKey)}
-                  >
-                    <FiEdit2 size={14} />
-                    <span className="text-sm">수정</span>
-                  </button>
-                  <button
-                    className="flex-1 px-3 py-2 rounded bg-red-600/20 hover:bg-red-600/30 text-red-400 transition-colors flex items-center justify-center gap-2"
-                    onClick={() => handleDeleteGroup(group.groupKey)}
-                  >
-                    <FiTrash2 size={14} />
-                    <span className="text-sm">삭제</span>
-                  </button>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </SortableContext>
+          </DndContext>
         </div>
 
         <div className="flex-grow-[2] bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
@@ -371,53 +646,61 @@ export default function CategoryManagement() {
               </button>
             )}
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            {filteredCategories.map((category) => (
-              <div key={category.key} className="bg-gray-700 p-4 rounded-lg border border-gray-600 hover:bg-gray-600 transition-colors">
-                <div className="flex items-center gap-3 mb-3">
-                  <input
-                    type="checkbox"
-                    checked={selectedCategories.includes(category.key)}
-                    onChange={() => handleCategoryCheck(category.key)}
-                    className="w-4 h-4 rounded border-gray-500 text-blue-600 focus:ring-blue-500 focus:ring-offset-gray-800 cursor-pointer"
-                  />
-                  <img src={category.icon} alt={category.label} className="w-10 h-10" />
-                  <div className="flex-1">
-                    <h3 className="text-gray-50 font-semibold m-0 mb-1">{category.label}</h3>
-                    <span className="text-gray-400 text-sm">{category.key}</span>
-                  </div>
-                  <span className="px-2 py-1 bg-gray-800 rounded text-gray-300 text-sm font-semibold">{category.count}</span>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    className="flex-1 px-3 py-2 rounded bg-gray-600 hover:bg-gray-500 text-gray-200 transition-colors flex items-center justify-center gap-2"
-                    onClick={() => handleEditCategory(category.key)}
-                  >
-                    <FiEdit2 size={14} />
-                    <span className="text-sm">수정</span>
-                  </button>
-                  <button
-                    className="flex-1 px-3 py-2 rounded bg-red-600/20 hover:bg-red-600/30 text-red-400 transition-colors flex items-center justify-center gap-2"
-                    onClick={() => handleDeleteCategory(category.key)}
-                  >
-                    <FiTrash2 size={14} />
-                    <span className="text-sm">삭제</span>
-                  </button>
-                </div>
-              </div>
-            ))}
-            {filteredCategories.length === 0 && (
-              <div className="col-span-2 flex flex-col items-center justify-center py-12 text-gray-400">
-                <p className="mb-4">이 그룹에 카테고리가 없습니다</p>
+          {hasCategoryChanges && (
+            <div className="mb-4 p-3 bg-blue-600/10 border border-blue-500/30 rounded-lg flex items-center justify-between">
+              <span className="text-blue-400 text-sm font-medium">순서가 변경되었습니다</span>
+              <div className="flex gap-2">
                 <button
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-semibold"
-                  onClick={handleAddCategory}
+                  className="px-3 py-1.5 bg-gray-600 hover:bg-gray-500 text-white text-sm rounded-lg transition-colors"
+                  onClick={handleCancelCategoryChanges}
+                  disabled={isSubmitting}
                 >
-                  카테고리 추가
+                  취소
+                </button>
+                <button
+                  className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors disabled:opacity-50"
+                  onClick={handleSaveCategoryOrder}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? '저장 중...' : '저장'}
                 </button>
               </div>
-            )}
-          </div>
+            </div>
+          )}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleCategoryDragEnd}
+          >
+            <SortableContext
+              items={filteredCategories.map(c => c.key)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="grid grid-cols-2 gap-4">
+                {filteredCategories.map((category) => (
+                  <SortableCategoryItem
+                    key={category.key}
+                    category={category}
+                    isChecked={selectedCategories.includes(category.key)}
+                    onCheck={() => handleCategoryCheck(category.key)}
+                    onEdit={() => handleEditCategory(category.key)}
+                    onDelete={() => handleDeleteCategory(category.key)}
+                  />
+                ))}
+                {filteredCategories.length === 0 && (
+                  <div className="col-span-2 flex flex-col items-center justify-center py-12 text-gray-400">
+                    <p className="mb-4">이 그룹에 카테고리가 없습니다</p>
+                    <button
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-semibold"
+                      onClick={handleAddCategory}
+                    >
+                      카테고리 추가
+                    </button>
+                  </div>
+                )}
+              </div>
+            </SortableContext>
+          </DndContext>
         </div>
       </div>
 
