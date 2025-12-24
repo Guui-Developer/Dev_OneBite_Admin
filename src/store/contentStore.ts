@@ -23,68 +23,51 @@ const convertContentDtoToLearningData = (dto: ContentDto): LearningData | null =
         title: dto.title,
         tags: dto.tags || [],
         createdAt: dto.createdAt,
+        updatedAt: dto.updatedAt,
+        views: dto.views,
+        bookmarks: dto.bookmarks,
     };
 
     try {
         switch (dto.type) {
             case 'code_tip':
-                if ('code' in dto && 'description' in dto) {
-                    return {
-                        ...base,
-                        type: 'code_tip',
-                        code: dto.code,
-                        language: '',
-                        description: dto.description,
-                    };
-                }
-                console.warn('Invalid code_tip DTO:', dto);
-                return null;
+                return {
+                    ...base,
+                    type: 'code_tip',
+                    code: ('code' in dto ? dto.code : '') || '',
+                    language: '123',
+                    description: ('description' in dto ? dto.description : '') || '',
+                };
             case 'bug_challenge':
-                if ('code' in dto && 'answer' in dto) {
-                    return {
-                        ...base,
-                        type: 'bug_challenge',
-                        code: dto.code,
-                        answer: dto.answer,
-                    };
-                }
-                console.warn('Invalid bug_challenge DTO:', dto);
-                return null;
+                return {
+                    ...base,
+                    type: 'bug_challenge',
+                    code: ('code' in dto ? dto.code : '') || '',
+                    answer: ('answer' in dto ? dto.answer : '') || '',
+                };
             case 'code_review':
-                if ('before' in dto && 'after' in dto && 'feedback' in dto) {
-                    return {
-                        ...base,
-                        type: 'code_review',
-                        before: dto.before,
-                        after: dto.after,
-                        feedback: dto.feedback,
-                    };
-                }
-                console.warn('Invalid code_review DTO:', dto);
-                return null;
+                return {
+                    ...base,
+                    type: 'code_review',
+                    before: ('before' in dto ? dto.before : '') || '',
+                    after: ('after' in dto ? dto.after : '') || '',
+                    feedback: ('feedback' in dto ? dto.feedback : '') || '',
+                };
             case 'interview':
-                if ('question' in dto && 'answer' in dto) {
-                    return {
-                        ...base,
-                        type: 'interview',
-                        question: dto.question,
-                        answer: dto.answer,
-                        tails: dto.tails || [],
-                    };
-                }
-                console.warn('Invalid interview DTO:', dto);
-                return null;
+                return {
+                    ...base,
+                    type: 'interview',
+                    question: ('question' in dto ? dto.question : '') || '',
+                    answer: ('answer' in dto ? dto.answer : '') || '',
+                    tails: ('tails' in dto ? dto.tails : []) || [],
+                };
             case 'meme':
-                if ('image' in dto && 'description' in dto) {
-                    return {
-                        ...base,
-                        type: 'meme',
-                        image: dto.image,
-                        description: dto.description,
-                    };
-                }
-                console.warn('Invalid meme DTO:', dto);
-                return null;
+                return {
+                    ...base,
+                    type: 'meme',
+                    image: ('image' in dto ? dto.image : '') || '',
+                    description: ('description' in dto ? dto.description : '') || '',
+                };
             default:
                 console.warn(`Unknown content type: ${(dto as ContentDto).type}`, dto);
                 return null;

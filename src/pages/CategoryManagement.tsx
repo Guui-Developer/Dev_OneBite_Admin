@@ -38,6 +38,7 @@ interface CategoryWithMeta extends Category {
 
 interface SortableGroupItemProps {
   group: CategoryGroupWithMeta;
+  index: number;
   isSelected: boolean;
   onSelect: () => void;
   onCheck: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -46,7 +47,7 @@ interface SortableGroupItemProps {
   onDelete: () => void;
 }
 
-function SortableGroupItem({ group, isSelected, onSelect, onCheck, isChecked, onEdit, onDelete }: SortableGroupItemProps) {
+function SortableGroupItem({ group, index, isSelected, onSelect, onCheck, isChecked, onEdit, onDelete }: SortableGroupItemProps) {
   const {
     attributes,
     listeners,
@@ -73,6 +74,9 @@ function SortableGroupItem({ group, isSelected, onSelect, onCheck, isChecked, on
       }`}
     >
       <div className="flex items-center gap-3 mb-2">
+        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white font-bold text-sm shadow-lg">
+          {index + 1}
+        </div>
         <div {...attributes} {...listeners} className="cursor-move text-gray-400 hover:text-gray-200">
           <GripVertical size={20} />
         </div>
@@ -119,13 +123,14 @@ function SortableGroupItem({ group, isSelected, onSelect, onCheck, isChecked, on
 
 interface SortableCategoryItemProps {
   category: CategoryWithMeta;
+  index: number;
   isChecked: boolean;
   onCheck: () => void;
   onEdit: () => void;
   onDelete: () => void;
 }
 
-function SortableCategoryItem({ category, isChecked, onCheck, onEdit, onDelete }: SortableCategoryItemProps) {
+function SortableCategoryItem({ category, index, isChecked, onCheck, onEdit, onDelete }: SortableCategoryItemProps) {
   const {
     attributes,
     listeners,
@@ -144,6 +149,9 @@ function SortableCategoryItem({ category, isChecked, onCheck, onEdit, onDelete }
   return (
     <div ref={setNodeRef} style={style} className="bg-gray-700 p-4 rounded-lg border border-gray-600 hover:bg-gray-600 transition-colors">
       <div className="flex items-center gap-3 mb-3">
+        <div className="flex items-center justify-center w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 text-white font-bold text-xs shadow-lg">
+          {index + 1}
+        </div>
         <div {...attributes} {...listeners} className="cursor-move text-gray-400 hover:text-gray-200">
           <GripVertical size={18} />
         </div>
@@ -183,7 +191,7 @@ function SortableCategoryItem({ category, isChecked, onCheck, onEdit, onDelete }
 export default function CategoryManagement() {
   const { data, isLoading, fetchCategories, deleteCategory, deleteCategories, deleteGroup, deleteGroups, addCategory, updateCategory, addGroup, updateGroup, reorderGroups, reorderCategories } = useCategoryStore();
 
-  const [selectedGroup, setSelectedGroup] = useState<string>('common');
+  const [selectedGroup, setSelectedGroup] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // 로컬 상태로 순서 관리
@@ -202,6 +210,11 @@ export default function CategoryManagement() {
     setLocalGroups(serverGroups);
     setHasGroupChanges(false);
     setHasCategoryChanges(false);
+
+    // 첫 번째 그룹을 자동으로 선택
+    if (serverGroups.length > 0 && !selectedGroup) {
+      setSelectedGroup(serverGroups[0].groupKey);
+    }
   }, [serverGroups]);
 
   const groups = localGroups;
@@ -593,10 +606,11 @@ export default function CategoryManagement() {
               strategy={verticalListSortingStrategy}
             >
               <div className="flex flex-col gap-3">
-                {groups.map((group) => (
+                {groups.map((group, index) => (
                   <SortableGroupItem
                     key={group.groupKey}
                     group={group}
+                    index={index}
                     isSelected={selectedGroup === group.groupKey}
                     onSelect={() => setSelectedGroup(group.groupKey)}
                     onCheck={(e) => {
@@ -676,11 +690,12 @@ export default function CategoryManagement() {
               items={filteredCategories.map(c => c.key)}
               strategy={verticalListSortingStrategy}
             >
-              <div className="grid grid-cols-2 gap-4">
-                {filteredCategories.map((category) => (
+              <div className="flex flex-col gap-3">
+                {filteredCategories.map((category, index) => (
                   <SortableCategoryItem
                     key={category.key}
                     category={category}
+                    index={index}
                     isChecked={selectedCategories.includes(category.key)}
                     onCheck={() => handleCategoryCheck(category.key)}
                     onEdit={() => handleEditCategory(category.key)}
@@ -688,7 +703,7 @@ export default function CategoryManagement() {
                   />
                 ))}
                 {filteredCategories.length === 0 && (
-                  <div className="col-span-2 flex flex-col items-center justify-center py-12 text-gray-400">
+                  <div className="flex flex-col items-center justify-center py-12 text-gray-400">
                     <p className="mb-4">이 그룹에 카테고리가 없습니다</p>
                     <button
                       className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-semibold"
