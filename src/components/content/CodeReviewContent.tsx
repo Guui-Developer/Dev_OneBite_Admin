@@ -11,11 +11,11 @@ export default function CodeReviewContent({ content }: CodeReviewContentProps) {
     <div className="flex flex-col gap-4">
       <div>
         <h3 className="text-sm font-semibold text-red-400">❌ Before</h3>
-        <CodeBox code={content.before} />
+        <CodeBox code={content.before} language={content.language} title={content.language} />
       </div>
       <div>
         <h3 className="text-sm font-semibold text-green-400">✅ After</h3>
-        <CodeBox code={content.after} />
+        <CodeBox code={content.after} language={content.language} title={content.language} />
       </div>
       <div>
         <h3 className="text-sm font-semibold text-[#B0B0B0]">피드백</h3>

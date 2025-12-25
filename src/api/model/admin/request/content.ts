@@ -34,6 +34,7 @@ export interface CreateBugChallengeRequest extends BaseContentRequest {
   type: 'bug_challenge';
   code: string;
   answer: string;
+  language: string;
 }
 
 /**
@@ -54,6 +55,7 @@ export interface CreateCodeReviewRequest extends BaseContentRequest {
   before: string;
   after: string;
   feedback: string;
+  language: string;
 }
 
 /**

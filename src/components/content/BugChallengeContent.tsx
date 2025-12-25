@@ -13,7 +13,7 @@ export default function BugChallengeContent({content}: BugChallengeContentProps)
 
     return (
         <div className="space-y-2">
-            <CodeBox code={content.code}/>
+            <CodeBox code={content.code} language={content.language} title={content.language}/>
 
             <button
                 style={{

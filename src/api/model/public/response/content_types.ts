@@ -25,6 +25,7 @@ export interface CodeReviewContent extends BaseContent {
   before: string;
   after: string;
   feedback: string;
+  language: string;
 }
 
 /**
@@ -43,6 +44,7 @@ export interface BugChallengeContent extends BaseContent {
   type: "bug_challenge";
   code: string;
   answer: string;
+  language: string;
 }
 
 /**

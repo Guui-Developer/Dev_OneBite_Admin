@@ -31,6 +31,7 @@ export interface BugChallengeDto extends BaseContentDto {
   type: 'bug_challenge';
   code: string;
   answer: string;
+  language: string;
 }
 
 /**
@@ -51,6 +52,7 @@ export interface CodeReviewDto extends BaseContentDto {
   before: string;
   after: string;
   feedback: string;
+  language: string;
 }
 
 /**
