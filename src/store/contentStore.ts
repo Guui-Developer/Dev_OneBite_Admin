@@ -106,7 +106,7 @@ export const useContentStore = create<ContentStore>((set, get) => ({
             const adminApi = new AdminApi();
             const response = await adminApi.getContentList({
                 page: params?.page || 0,
-                size: params?.size || 100,
+                size: params?.size || 100000,
                 keyword: params?.keyword,
             });
 

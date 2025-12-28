@@ -32,7 +32,7 @@ export default function ContentSettings() {
   const [searchText, setSearchText] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(0);
   const [uploadProgress, setUploadProgress] = useState<{ current: number; total: number } | null>(null);
-  const pageSize = 100;
+  const pageSize = 100000;
 
   useEffect(() => {
     fetchContents({ page: currentPage, size: pageSize, keyword: searchText });
