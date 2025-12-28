@@ -207,8 +207,20 @@ export default function ContentSettings() {
 
       setUploadProgress({ current: 0, total: contentsArray.length });
 
+      let successCount = 0;
+      let failCount = 0;
+      const failedItems: number[] = [];
+
       for (let i = 0; i < contentsArray.length; i++) {
-        await addContent(contentsArray[i]);
+        try {
+          await addContent(contentsArray[i]);
+          successCount++;
+        } catch (error) {
+          failCount++;
+          failedItems.push(i + 1);
+          console.error(`콘텐츠 ${i + 1} 추가 실패:`, error);
+        }
+
         setUploadProgress({ current: i + 1, total: contentsArray.length });
 
         if (i < contentsArray.length - 1) {
@@ -218,7 +230,12 @@ export default function ContentSettings() {
 
       await fetchContents({ page: currentPage, size: pageSize, keyword: searchText });
 
-      alert(`${contentsArray.length}개의 콘텐츠가 추가되었습니다.`);
+      let message = `성공: ${successCount}개`;
+      if (failCount > 0) {
+        message += ` | 실패: ${failCount}개 (${failedItems.join(', ')}번째 항목)`;
+      }
+      alert(message);
+
       setShowJsonUploadModal(false);
       setJsonText('');
       setUploadProgress(null);
