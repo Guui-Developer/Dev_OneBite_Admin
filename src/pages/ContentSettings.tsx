@@ -30,18 +30,20 @@ export default function ContentSettings() {
   const [selectedContents, setSelectedContents] = useState<number[]>([]);
   const [filterCategory, setFilterCategory] = useState<string>('');
   const [searchText, setSearchText] = useState<string>('');
+  const [appliedSearchText, setAppliedSearchText] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(0);
   const [uploadProgress, setUploadProgress] = useState<{ current: number; total: number } | null>(null);
-  const pageSize = 100000;
+  const pageSize = 200;
 
   useEffect(() => {
-    fetchContents({ page: currentPage, size: pageSize, keyword: searchText });
+    fetchContents({ page: 0, size: 100000 });
     fetchCategories();
-  }, [currentPage, fetchCategories]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     setCurrentPage(0);
-  }, [searchText, filterCategory, activeTab]);
+  }, [appliedSearchText, filterCategory, activeTab]);
 
   const GROUPS = categoryData?.groups || [];
   const AVAILABLE_CATEGORIES = GROUPS.flatMap(g =>
@@ -58,17 +60,35 @@ export default function ContentSettings() {
   ];
 
   const contents = contentData?.content || [];
-  let filteredContents = activeTab === 'all'
-    ? contents
-    : contents.filter(c => c.type === activeTab);
 
+  // 클라이언트 사이드 필터링
+  let filteredContents = contents;
+
+  // 1. 타입 필터
+  if (activeTab !== 'all') {
+    filteredContents = filteredContents.filter(c => c.type === activeTab);
+  }
+
+  // 2. 검색어 필터
+  if (appliedSearchText) {
+    const searchLower = appliedSearchText.toLowerCase();
+    filteredContents = filteredContents.filter(c =>
+      c.title.toLowerCase().includes(searchLower)
+    );
+  }
+
+  // 3. 카테고리 필터
   if (filterCategory) {
     filteredContents = filteredContents.filter(c => c.tags.includes(filterCategory));
   }
 
-  const totalElements = contentData?.pagination.total || 0;
+  // 페이지네이션
+  const totalElements = filteredContents.length;
   const totalPages = Math.ceil(totalElements / pageSize);
-  const hasNext = contentData?.pagination.hasNext || false;
+  const startIndex = currentPage * pageSize;
+  const endIndex = startIndex + pageSize;
+  const paginatedContents = filteredContents.slice(startIndex, endIndex);
+  const hasNext = currentPage < totalPages - 1;
   const hasPrevious = currentPage > 0;
 
   const handleAdd = () => {
@@ -94,11 +114,16 @@ export default function ContentSettings() {
     if (confirm(`ID ${id} 콘텐츠를 삭제하시겠습니까?`)) {
       try {
         await deleteContent(id);
-        await fetchContents({ page: currentPage, size: pageSize, keyword: searchText });
+        await fetchContents({ page: 0, size: 100000 });
       } catch (error) {
         alert(error instanceof Error ? error.message : '삭제 실패');
       }
     }
+  };
+
+  const handleSearch = () => {
+    setAppliedSearchText(searchText);
+    setCurrentPage(0);
   };
 
   const handleSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
@@ -166,7 +191,7 @@ export default function ContentSettings() {
         await addContent(contentData);
       }
 
-      await fetchContents({ page: currentPage, size: pageSize, keyword: searchText });
+      await fetchContents({ page: 0, size: 100000 });
       setShowModal(false);
     } catch (error) {
       alert(error instanceof Error ? error.message : '저장 실패');
@@ -228,7 +253,7 @@ export default function ContentSettings() {
         }
       }
 
-      await fetchContents({ page: currentPage, size: pageSize, keyword: searchText });
+      await fetchContents({ page: 0, size: 100000 });
 
       let message = `성공: ${successCount}개`;
       if (failCount > 0) {
@@ -260,10 +285,10 @@ export default function ContentSettings() {
   };
 
   const handleSelectAll = () => {
-    if (selectedContents.length === filteredContents.length) {
+    if (selectedContents.length === paginatedContents.length) {
       setSelectedContents([]);
     } else {
-      setSelectedContents(filteredContents.map(c => c.id));
+      setSelectedContents(paginatedContents.map(c => c.id));
     }
   };
 
@@ -272,7 +297,7 @@ export default function ContentSettings() {
     if (confirm(`선택한 ${selectedContents.length}개의 콘텐츠를 삭제하시겠습니까?`)) {
       try {
         await deleteContents(selectedContents);
-        await fetchContents({ page: currentPage, size: pageSize, keyword: searchText });
+        await fetchContents({ page: 0, size: 100000 });
         setSelectedContents([]);
       } catch (error) {
         alert(error instanceof Error ? error.message : '삭제 실패');
@@ -598,8 +623,7 @@ export default function ContentSettings() {
             onChange={(e) => setSearchText(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
-                setCurrentPage(0);
-                fetchContents({ page: 0, size: pageSize, keyword: searchText });
+                handleSearch();
               }
             }}
             className="w-full px-4 py-2 border border-gray-600 rounded-lg text-base text-gray-200 bg-gray-700 transition-colors focus:outline-none focus:border-blue-400 focus:bg-gray-600"
@@ -607,10 +631,7 @@ export default function ContentSettings() {
         </div>
         <button
           className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
-          onClick={() => {
-            setCurrentPage(0);
-            fetchContents({ page: 0, size: pageSize, keyword: searchText });
-          }}
+          onClick={handleSearch}
         >
           검색
         </button>
@@ -628,11 +649,12 @@ export default function ContentSettings() {
             ))}
           </select>
         </div>
-        {(searchText || filterCategory) && (
+        {(appliedSearchText || filterCategory) && (
           <button
             className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-gray-200 rounded-lg transition-colors"
             onClick={() => {
               setSearchText('');
+              setAppliedSearchText('');
               setFilterCategory('');
             }}
           >
@@ -663,7 +685,7 @@ export default function ContentSettings() {
               <th className="p-4 text-left text-gray-300 text-sm font-semibold border-b border-gray-600 w-12">
                 <input
                   type="checkbox"
-                  checked={selectedContents.length === filteredContents.length && filteredContents.length > 0}
+                  checked={selectedContents.length === paginatedContents.length && paginatedContents.length > 0}
                   onChange={handleSelectAll}
                   className="w-4 h-4 rounded border-gray-500 text-blue-600 focus:ring-blue-500 focus:ring-offset-gray-800 cursor-pointer"
                 />
@@ -677,7 +699,7 @@ export default function ContentSettings() {
             </tr>
           </thead>
           <tbody>
-            {filteredContents.map((content) => (
+            {paginatedContents.map((content) => (
               <tr key={content.id} className="hover:bg-gray-700 transition-colors">
                 <td className="p-4 text-gray-200 text-sm border-b border-gray-700">
                   <input
@@ -744,7 +766,7 @@ export default function ContentSettings() {
 
       <div className="flex items-center justify-between mt-6">
         <div className="text-gray-400 text-sm">
-          전체 {totalElements}개 중 {currentPage * pageSize + 1}-{Math.min((currentPage + 1) * pageSize, totalElements)}개 표시
+          전체 {totalElements}개 중 {totalElements > 0 ? currentPage * pageSize + 1 : 0}-{Math.min((currentPage + 1) * pageSize, totalElements)}개 표시
         </div>
         <div className="flex items-center gap-2">
           <button

@@ -217,6 +217,7 @@ export class AdminApi {
       queryParams.append("page", params.page.toString());
     if (params?.size !== undefined)
       queryParams.append("size", params.size.toString());
+    if (params?.type) queryParams.append("type", params.type);
 
     const query = queryParams.toString();
     const url = query

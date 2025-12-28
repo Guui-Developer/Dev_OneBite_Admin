@@ -7,6 +7,7 @@ export interface GetAdminContentListParams {
   keyword?: string;
   page?: number;
   size?: number;
+  type?: string;
 }
 
 /**

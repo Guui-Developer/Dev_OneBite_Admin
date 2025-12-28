@@ -100,7 +100,7 @@ export const useContentStore = create<ContentStore>((set, get) => ({
     error: null,
     selectedType: 'all',
 
-    fetchContents: async (params?: { page?: number; size?: number; keyword?: string }) => {
+    fetchContents: async (params?: { page?: number; size?: number; keyword?: string; type?: string }) => {
         set({ isLoading: true, error: null });
         try {
             const adminApi = new AdminApi();
@@ -108,6 +108,7 @@ export const useContentStore = create<ContentStore>((set, get) => ({
                 page: params?.page || 0,
                 size: params?.size || 100000,
                 keyword: params?.keyword,
+                type: params?.type,
             });
 
             console.log('API Response:', response);

@@ -201,7 +201,8 @@ export default function CategoryManagement() {
 
   useEffect(() => {
     fetchCategories();
-  }, [fetchCategories]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const serverGroups = data?.groups || [];
 
