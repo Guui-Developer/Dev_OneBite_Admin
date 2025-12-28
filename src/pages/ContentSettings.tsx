@@ -249,7 +249,7 @@ export default function ContentSettings() {
         setUploadProgress({ current: i + 1, total: contentsArray.length });
 
         if (i < contentsArray.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 250));
+          await new Promise(resolve => setTimeout(resolve, 100));
         }
       }
 
