@@ -4,6 +4,7 @@
 "type": "bug_challenge",
 "title": "[이모지] [버그 유형, 18자 이내]",
 "code": "[3-8줄, 각 줄 40자 이내, \\n으로 줄바꿈]",
+"language": "[JavaScript|Python|React 등 기술 스택에 따라 마크다운 스니펫에 맞는 형태로 결정]",
 "answer": "[80-100자, 문제 설명 + 해결방법]",
 "tags": ["[소문자 태그]"]
 }

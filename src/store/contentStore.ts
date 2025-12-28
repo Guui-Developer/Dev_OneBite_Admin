@@ -18,12 +18,11 @@ interface GetLearningDataListData {
 
 const convertContentDtoToLearningData = (dto: ContentDto): LearningData | null => {
     const base = {
-        id: dto.contentId,
+        id: dto.id,
         type: dto.type as ContentType,
         title: dto.title,
         tags: dto.tags || [],
         createdAt: dto.createdAt,
-        updatedAt: dto.updatedAt,
         views: dto.views,
         bookmarks: dto.bookmarks,
     };
@@ -35,7 +34,7 @@ const convertContentDtoToLearningData = (dto: ContentDto): LearningData | null =
                     ...base,
                     type: 'code_tip',
                     code: ('code' in dto ? dto.code : '') || '',
-                    language: '123',
+                    language: ('language' in dto ? dto.language : '') || 'javascript',
                     description: ('description' in dto ? dto.description : '') || '',
                 };
             case 'bug_challenge':
@@ -44,6 +43,7 @@ const convertContentDtoToLearningData = (dto: ContentDto): LearningData | null =
                     type: 'bug_challenge',
                     code: ('code' in dto ? dto.code : '') || '',
                     answer: ('answer' in dto ? dto.answer : '') || '',
+                    language: ('language' in dto ? dto.language : '') || 'javascript',
                 };
             case 'code_review':
                 return {
@@ -52,6 +52,7 @@ const convertContentDtoToLearningData = (dto: ContentDto): LearningData | null =
                     before: ('before' in dto ? dto.before : '') || '',
                     after: ('after' in dto ? dto.after : '') || '',
                     feedback: ('feedback' in dto ? dto.feedback : '') || '',
+                    language: ('language' in dto ? dto.language : '') || 'javascript',
                 };
             case 'interview':
                 return {
@@ -151,6 +152,7 @@ export const useContentStore = create<ContentStore>((set, get) => ({
                     title: content.title,
                     tags: content.tags,
                     code: content.code,
+                    language: content.language || 'javascript',
                     description: content.description,
                 };
                 break;
@@ -161,6 +163,7 @@ export const useContentStore = create<ContentStore>((set, get) => ({
                     tags: content.tags,
                     code: content.code,
                     answer: content.answer,
+                    language: content.language || 'javascript',
                 };
                 break;
             case 'code_review':
@@ -171,6 +174,7 @@ export const useContentStore = create<ContentStore>((set, get) => ({
                     before: content.before,
                     after: content.after,
                     feedback: content.feedback,
+                    language: content.language || 'javascript',
                 };
                 break;
             case 'interview':
@@ -216,6 +220,7 @@ export const useContentStore = create<ContentStore>((set, get) => ({
                     title: updates.title,
                     tags: updates.tags,
                     code: updates.code,
+                    language: updates.language || 'javascript',
                     description: updates.description,
                 };
                 break;
@@ -229,6 +234,7 @@ export const useContentStore = create<ContentStore>((set, get) => ({
                     tags: updates.tags,
                     code: updates.code,
                     answer: updates.answer,
+                    language: updates.language || 'javascript',
                 };
                 break;
             case 'code_review':
@@ -242,6 +248,7 @@ export const useContentStore = create<ContentStore>((set, get) => ({
                     before: updates.before,
                     after: updates.after,
                     feedback: updates.feedback,
+                    language: updates.language || 'javascript',
                 };
                 break;
             case 'interview':

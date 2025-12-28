@@ -295,6 +295,7 @@ export default function ContentSettings() {
               id: content.id,
               code: content.code,
               answer: content.answer,
+              language: content.language || 'javascript',
               title: content.title,
               tags: content.tags,
               createdAt: content.createdAt
@@ -314,6 +315,7 @@ export default function ContentSettings() {
               before: content.before,
               after: content.after,
               feedback: content.feedback,
+              language: content.language || 'javascript',
               title: content.title,
               tags: content.tags,
               createdAt: content.createdAt

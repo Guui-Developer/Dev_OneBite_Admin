@@ -24,6 +24,7 @@ interface BaseContentRequest {
 export interface CreateCodeTipRequest extends BaseContentRequest {
   type: 'code_tip';
   code: string;
+  language: string;
   description: string;
 }
 

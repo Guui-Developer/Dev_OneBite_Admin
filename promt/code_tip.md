@@ -3,8 +3,8 @@
 {
 "type": "code_tip",
 "title": "[이모지] [핵심 키워드, 18자 이내]",
-"code": "[1-3줄, 각 줄 40자 이내, \\n으로 줄바꿈]",
-"language": "[JavaScript|Python|React 등 기술 스택에 따라 결정]",
+"code": "[1-3줄, 각 줄 40자 이내, \\n으로 줄바꿈]"
+"language": "[JavaScript|Python|React 등 기술 스택에 따라 마크다운 스니펫에 맞는 형태로 결정]",
 "description": "[40-50자, 한 문장]",
 "tags": ["[소문자 태그1]", "[소문자 태그2]"]
 }

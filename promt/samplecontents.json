@@ -1,0 +1,1108 @@
+﻿[
+  {
+    "type": "code_tip",
+    "title": "💡 배열 마지막 요소 접근",
+    "code": "const arr = [1, 2, 3, 4, 5];\nconst last = arr.at(-1); // 5",
+    "language": "javascript",
+    "description": "at() 메서드로 음수 인덱스 사용이 가능해요",
+    "tags": [
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "type": "code_tip",
+    "title": "✨ Optional Chaining",
+    "code": "const name = user?.profile?.name;\n// undefined 에러 방지",
+    "language": "javascript",
+    "description": "?. 연산자로 안전하게 중첩 속성에 접근해요",
+    "tags": [
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "type": "code_tip",
+    "title": "🎯 딕셔너리 기본값",
+    "code": "data = {}\nvalue = data.get('key', 'default')",
+    "language": "python",
+    "description": "get()으로 키가 없을 때 기본값을 반환해요",
+    "tags": [
+      "python"
+    ]
+  },
+  {
+    "type": "code_tip",
+    "title": "🔥 구조 분해 할당",
+    "code": "const { name, age } = user;\n// user.name, user.age 대신",
+    "language": "javascript",
+    "description": "객체에서 필요한 속성만 깔끔하게 추출해요",
+    "tags": [
+      "javascript",
+      "react"
+    ]
+  },
+  {
+    "type": "code_tip",
+    "title": "💡 삼항 연산자 축약",
+    "code": "const result = value || 'default';\n// value가 falsy면 'default'",
+    "language": "javascript",
+    "description": "|| 연산자로 기본값을 간단하게 설정해요",
+    "tags": [
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "type": "code_tip",
+    "title": "✨ 리스트 컴프리헨션",
+    "code": "squares = [x**2 for x in range(10)]\n# [0, 1, 4, 9, 16, ...]",
+    "language": "python",
+    "description": "반복문을 한 줄로 간결하게 표현해요",
+    "tags": [
+      "python"
+    ]
+  },
+  {
+    "type": "code_tip",
+    "title": "🎯 useState 초기값 함수",
+    "code": "const [data, setData] = \n  useState(() => expensive());\n// 최초 1번만 실행",
+    "language": "javascript",
+    "description": "함수로 전달하면 초기 렌더링에만 실행돼요",
+    "tags": [
+      "react",
+      "javascript"
+    ]
+  },
+  {
+    "type": "code_tip",
+    "title": "🔥 템플릿 리터럴",
+    "code": "const msg = `Hello ${name}!`;\n// 문자열 연결보다 깔끔",
+    "language": "javascript",
+    "description": "백틱으로 변수를 문자열에 쉽게 삽입해요",
+    "tags": [
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "type": "code_tip",
+    "title": "💡 배열 필터링",
+    "code": "const evens = arr.filter(x => x % 2 === 0);\n// 짝수만 추출",
+    "language": "javascript",
+    "description": "filter()로 조건에 맞는 요소만 선택해요",
+    "tags": [
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "type": "code_tip",
+    "title": "✨ f-string 포매팅",
+    "code": "name = 'Alice'\nprint(f'Hello {name}!')",
+    "language": "python",
+    "description": "f-string으로 변수를 문자열에 쉽게 넣어요",
+    "tags": [
+      "python"
+    ]
+  },
+  {
+    "type": "code_tip",
+    "title": "🎯 스프레드 연산자",
+    "code": "const newArr = [...arr1, ...arr2];\n// 배열 합치기",
+    "language": "javascript",
+    "description": "...으로 배열이나 객체를 펼쳐서 복사해요",
+    "tags": [
+      "javascript",
+      "react"
+    ]
+  },
+  {
+    "type": "code_tip",
+    "title": "🔥 useEffect 클린업",
+    "code": "useEffect(() => {\n  return () => cleanup();\n}, []);",
+    "language": "javascript",
+    "description": "return 함수로 컴포넌트 언마운트 시 정리해요",
+    "tags": [
+      "react",
+      "javascript"
+    ]
+  },
+  {
+    "type": "code_tip",
+    "title": "💡 enum으로 타입 안전",
+    "code": "enum Status {\n  Active, Inactive\n}",
+    "language": "typescript",
+    "description": "enum으로 상수 그룹을 타입 안전하게 관리해요",
+    "tags": [
+      "typescript"
+    ]
+  },
+  {
+    "type": "code_tip",
+    "title": "✨ async/await 에러처리",
+    "code": "try {\n  await fetchData();\n} catch (err) {\n  console.error(err);\n}",
+    "language": "javascript",
+    "description": "try-catch로 비동기 에러를 동기처럼 처리해요",
+    "tags": [
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "type": "code_tip",
+    "title": "🎯 CSS Grid 중앙정렬",
+    "code": "display: grid;\nplace-items: center;",
+    "language": "css",
+    "description": "place-items로 한 번에 수평/수직 중앙정렬해요",
+    "tags": [
+      "css",
+      "html"
+    ]
+  },
+  {
+    "type": "code_tip",
+    "title": "🔥 Tailwind 반응형",
+    "code": "className=\"w-full md:w-1/2 lg:w-1/3\"",
+    "language": "javascript",
+    "description": "접두사로 breakpoint별 스타일을 쉽게 적용해요",
+    "tags": [
+      "tailwindcss",
+      "react"
+    ]
+  },
+  {
+    "type": "code_tip",
+    "title": "💡 Python zip 함수",
+    "code": "names = ['a', 'b']\nages = [1, 2]\nlist(zip(names, ages))",
+    "language": "python",
+    "description": "여러 리스트를 동시에 순회하며 묶어줘요",
+    "tags": [
+      "python"
+    ]
+  },
+  {
+    "type": "code_tip",
+    "title": "✨ useMemo 최적화",
+    "code": "const value = useMemo(\n  () => expensive(a, b),\n  [a, b]\n);",
+    "language": "javascript",
+    "description": "무거운 계산 결과를 의존성 기반으로 캐싱해요",
+    "tags": [
+      "react",
+      "javascript"
+    ]
+  },
+  {
+    "type": "code_tip",
+    "title": "🎯 null 병합 연산자",
+    "code": "const value = input ?? 'default';\n// null/undefined만 체크",
+    "language": "javascript",
+    "description": "??는 null과 undefined만 기본값 처리해요",
+    "tags": [
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "type": "code_tip",
+    "title": "🔥 Python enumerate",
+    "code": "for i, item in enumerate(items):\n  print(i, item)",
+    "language": "python",
+    "description": "인덱스와 값을 동시에 가져올 수 있어요",
+    "tags": [
+      "python"
+    ]
+  },
+  {
+    "type": "bug_challenge",
+    "title": "🐛 무한 루프 함정",
+    "code": "useEffect(() => {\n  setCount(count + 1);\n});\n// 의존성 배열 없음",
+    "language": "javascript",
+    "answer": "의존성 배열이 없어서 매 렌더링마다 실행돼요. useEffect(() => {}, [])처럼 빈 배열을 추가하거나 적절한 의존성을 넣어주세요.",
+    "tags": [
+      "react",
+      "javascript"
+    ]
+  },
+  {
+    "type": "bug_challenge",
+    "title": "⚠️ 비교 연산자 실수",
+    "code": "if (x = 5) {\n  console.log('true');\n}\n// 항상 true",
+    "language": "javascript",
+    "answer": "= 대신 ==나 ===를 써야 해요. 현재는 할당 연산자라 x에 5를 대입하고 항상 true를 반환해요.",
+    "tags": [
+      "javascript"
+    ]
+  },
+  {
+    "type": "bug_challenge",
+    "title": "🔍 참조 비교 오류",
+    "code": "const a = [1, 2, 3];\nconst b = [1, 2, 3];\nif (a === b) {\n  console.log('same');\n}",
+    "language": "javascript",
+    "answer": "배열은 참조 타입이라 다른 객체예요. 값을 비교하려면 JSON.stringify()나 every()를 사용해야 해요.",
+    "tags": [
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "type": "bug_challenge",
+    "title": "🚨 클로저 변수 캡처",
+    "code": "for (var i = 0; i < 3; i++) {\n  setTimeout(() => \n    console.log(i), 100);\n}\n// 3, 3, 3 출력",
+    "language": "javascript",
+    "answer": "var는 함수 스코프라 모든 콜백이 같은 i를 참조해요. let을 사용하거나 IIFE로 감싸면 해결돼요.",
+    "tags": [
+      "javascript"
+    ]
+  },
+  {
+    "type": "bug_challenge",
+    "title": "🐛 setState 비동기",
+    "code": "setCount(count + 1);\nsetCount(count + 1);\n// count가 1만 증가",
+    "language": "javascript",
+    "answer": "setState는 비동기라 이전 값 기반 업데이트예요. setCount(prev => prev + 1)로 함수형 업데이트를 사용해야 해요.",
+    "tags": [
+      "react",
+      "javascript"
+    ]
+  },
+  {
+    "type": "bug_challenge",
+    "title": "⚠️ 부동소수점 오차",
+    "code": "if (0.1 + 0.2 === 0.3) {\n  console.log('equal');\n}\n// false",
+    "language": "javascript",
+    "answer": "부동소수점 연산은 정확하지 않아요. toFixed()나 작은 오차 범위로 비교하거나 정수로 변환해서 계산하세요.",
+    "tags": [
+      "javascript"
+    ]
+  },
+  {
+    "type": "bug_challenge",
+    "title": "🔍 Python 가변 기본값",
+    "code": "def add(item, lst=[]):\n  lst.append(item)\n  return lst\n# 리스트 공유됨",
+    "language": "python",
+    "answer": "가변 기본값은 함수 정의 시 한 번만 생성돼요. def add(item, lst=None): lst = lst or []로 수정하세요.",
+    "tags": [
+      "python"
+    ]
+  },
+  {
+    "type": "bug_challenge",
+    "title": "🚨 key prop 누락",
+    "code": "items.map(item => \n  <div>{item.name}</div>\n)\n// Warning 발생",
+    "language": "javascript",
+    "answer": "리스트 렌더링 시 key가 없으면 성능 문제가 발생해요. <div key={item.id}>처럼 고유한 key를 추가하세요.",
+    "tags": [
+      "react",
+      "javascript"
+    ]
+  },
+  {
+    "type": "bug_challenge",
+    "title": "🐛 얕은 복사 문제",
+    "code": "const copy = arr;\ncopy.push(4);\n// arr도 변경됨",
+    "language": "javascript",
+    "answer": "단순 할당은 참조만 복사해요. [...arr]나 Array.from()으로 새 배열을 만들어야 해요.",
+    "tags": [
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "type": "bug_challenge",
+    "title": "⚠️ async 없이 await",
+    "code": "function getData() {\n  await fetch('/api');\n}\n// SyntaxError",
+    "language": "javascript",
+    "answer": "await는 async 함수 안에서만 사용할 수 있어요. async function getData()로 수정하세요.",
+    "tags": [
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "type": "bug_challenge",
+    "title": "🔍 this 바인딩 오류",
+    "code": "class Counter {\n  count = 0;\n  increment() {\n    this.count++;\n  }\n}\nsetTimeout(counter.increment, 100);",
+    "language": "javascript",
+    "answer": "this가 undefined가 돼요. bind(this)를 사용하거나 화살표 함수로 정의하세요.",
+    "tags": [
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "type": "bug_challenge",
+    "title": "🚨 Promise 에러 미처리",
+    "code": "fetch('/api')\n  .then(res => res.json())\n  .then(data => use(data));\n// 에러 처리 없음",
+    "language": "javascript",
+    "answer": "네트워크 실패 시 에러가 잡히지 않아요. .catch(err => handle(err))를 추가하세요.",
+    "tags": [
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "type": "bug_challenge",
+    "title": "🐛 CSS 특이도 충돌",
+    "code": ".button { color: red; }\n#main .button { color: blue; }\n/* blue가 적용됨 */",
+    "language": "css",
+    "answer": "ID 선택자가 클래스보다 특이도가 높아요. 더 구체적인 선택자를 사용하거나 !important를 고려하세요.",
+    "tags": [
+      "css",
+      "html"
+    ]
+  },
+  {
+    "type": "bug_challenge",
+    "title": "⚠️ 문자열 숫자 연산",
+    "code": "const result = '5' + 3;\nconsole.log(result);\n// '53' 출력",
+    "language": "javascript",
+    "answer": "+ 연산자는 문자열 연결로 동작해요. Number('5') + 3이나 parseInt()로 변환하세요.",
+    "tags": [
+      "javascript"
+    ]
+  },
+  {
+    "type": "bug_challenge",
+    "title": "🔍 SQL Injection 위험",
+    "code": "query = f\"SELECT * FROM users \nWHERE id = {user_id}\"\n# 보안 취약",
+    "language": "python",
+    "answer": "직접 문자열 삽입은 SQL Injection 위험이 있어요. 파라미터 바인딩(?, %s)을 사용하세요.",
+    "tags": [
+      "python",
+      "mysql"
+    ]
+  },
+  {
+    "type": "bug_challenge",
+    "title": "🚨 인덱스 범위 초과",
+    "code": "arr = [1, 2, 3]\nprint(arr[5])\n# IndexError",
+    "language": "python",
+    "answer": "존재하지 않는 인덱스에 접근했어요. arr.get(5) 대신 길이 체크나 try-except를 사용하세요.",
+    "tags": [
+      "python"
+    ]
+  },
+  {
+    "type": "bug_challenge",
+    "title": "🐛 div 안에 p 중첩",
+    "code": "<p>\n  <div>내용</div>\n</p>\n<!-- 잘못된 중첩 -->",
+    "language": "html",
+    "answer": "p 태그 안에 블록 요소를 넣을 수 없어요. div로 감싸거나 span을 사용하세요.",
+    "tags": [
+      "html",
+      "css"
+    ]
+  },
+  {
+    "type": "bug_challenge",
+    "title": "⚠️ useCallback 의존성",
+    "code": "const handle = useCallback(() => {\n  doSomething(value);\n}, []);\n// value 변경 안 됨",
+    "language": "javascript",
+    "answer": "의존성 배열에 value가 없어서 이전 값을 참조해요. [value]를 추가하세요.",
+    "tags": [
+      "react",
+      "javascript"
+    ]
+  },
+  {
+    "type": "bug_challenge",
+    "title": "🔍 float 정렬 깨짐",
+    "code": ".parent { }\n.child { float: left; }\n/* 부모 높이 0 */",
+    "language": "css",
+    "answer": "float은 부모 높이를 무시해요. clearfix나 overflow: auto를 부모에 추가하세요.",
+    "tags": [
+      "css",
+      "html"
+    ]
+  },
+  {
+    "type": "bug_challenge",
+    "title": "🚨 CORS 에러",
+    "code": "fetch('http://api.example.com')\n  .then(res => res.json());\n// CORS error",
+    "language": "javascript",
+    "answer": "서버에서 Access-Control-Allow-Origin 헤더를 설정하거나 프록시를 사용해야 해요.",
+    "tags": [
+      "javascript",
+      "nodejs"
+    ]
+  },
+  {
+    "type": "interview",
+    "title": "🎯 클로저란?",
+    "question": "JavaScript의 클로저를 설명하세요",
+    "answer": "클로저는 함수가 선언될 때의 렉시컬 환경을 기억하는 함수입니다. 외부 함수의 변수에 접근할 수 있으며, 데이터 은닉과 캡슐화에 활용됩니다.",
+    "tails": [
+      "클로저의 실제 사용 예시를 들어보세요",
+      "클로저와 메모리 누수의 관계는?"
+    ],
+    "tags": [
+      "javascript"
+    ]
+  },
+  {
+    "type": "interview",
+    "title": "💼 REST API란?",
+    "question": "RESTful API의 특징을 설명하세요",
+    "answer": "REST는 자원을 URI로 표현하고 HTTP 메서드로 행위를 정의하는 아키텍처입니다. 무상태성, 캐시 가능성, 계층화된 시스템 등의 특징이 있습니다.",
+    "tails": [
+      "PUT과 PATCH의 차이는?",
+      "RESTful하지 않은 API 예시는?"
+    ],
+    "tags": [
+      "network"
+    ]
+  },
+  {
+    "type": "interview",
+    "title": "📝 가상 DOM이란?",
+    "question": "React의 가상 DOM을 설명하세요",
+    "answer": "가상 DOM은 실제 DOM의 경량화된 복사본입니다. 변경사항을 가상 DOM에서 먼저 계산하고 실제 DOM과 비교해 최소한의 업데이트만 수행해 성능을 최적화합니다.",
+    "tails": [
+      "재조정(Reconciliation) 과정은?",
+      "가상 DOM이 항상 빠른가요?"
+    ],
+    "tags": [
+      "react"
+    ]
+  },
+  {
+    "type": "interview",
+    "title": "🤔 호이스팅이란?",
+    "question": "JavaScript의 호이스팅을 설명하세요",
+    "answer": "호이스팅은 변수와 함수 선언이 스코프 최상단으로 끌어올려지는 현상입니다. var는 undefined로 초기화되지만 let과 const는 TDZ에 있어 참조 에러가 발생합니다.",
+    "tails": [
+      "TDZ(Temporal Dead Zone)란?",
+      "함수 선언식과 표현식의 호이스팅 차이는?"
+    ],
+    "tags": [
+      "javascript"
+    ]
+  },
+  {
+    "type": "interview",
+    "title": "🎯 프로미스란?",
+    "question": "Promise의 동작 원리를 설명하세요",
+    "answer": "Promise는 비동기 작업의 최종 완료 또는 실패를 나타내는 객체입니다. pending, fulfilled, rejected 세 가지 상태를 가지며 then/catch로 체이닝할 수 있습니다.",
+    "tails": [
+      "Promise.all과 Promise.race의 차이는?",
+      "async/await와의 관계는?"
+    ],
+    "tags": [
+      "javascript"
+    ]
+  },
+  {
+    "type": "interview",
+    "title": "💼 정규화란?",
+    "question": "데이터베이스 정규화를 설명하세요",
+    "answer": "정규화는 중복을 최소화하고 데이터 무결성을 높이기 위해 테이블을 분리하는 과정입니다. 1NF부터 5NF까지 있으며 일반적으로 3NF까지 적용합니다.",
+    "tails": [
+      "역정규화는 언제 사용하나요?",
+      "1NF, 2NF, 3NF를 각각 설명해보세요"
+    ],
+    "tags": [
+      "databasetheory"
+    ]
+  },
+  {
+    "type": "interview",
+    "title": "📝 JWT란?",
+    "question": "JWT 토큰을 설명하세요",
+    "answer": "JWT는 JSON 형식의 자가 포함된 토큰입니다. Header, Payload, Signature로 구성되며 stateless 인증에 사용됩니다. 서버 부담을 줄이지만 탈취 위험이 있습니다.",
+    "tails": [
+      "Access Token과 Refresh Token의 차이는?",
+      "JWT의 보안 취약점은?"
+    ],
+    "tags": [
+      "network"
+    ]
+  },
+  {
+    "type": "interview",
+    "title": "🤔 이벤트 루프란?",
+    "question": "JavaScript 이벤트 루프를 설명하세요",
+    "answer": "이벤트 루프는 콜스택과 태스크 큐를 모니터링하며 콜스택이 비면 큐의 작업을 실행합니다. 마이크로태스크가 매크로태스크보다 우선순위가 높습니다.",
+    "tails": [
+      "마이크로태스크와 매크로태스크의 예시는?",
+      "setTimeout(fn, 0)이 즉시 실행되지 않는 이유는?"
+    ],
+    "tags": [
+      "javascript"
+    ]
+  },
+  {
+    "type": "interview",
+    "title": "🎯 SOLID 원칙이란?",
+    "question": "객체지향의 SOLID 원칙을 설명하세요",
+    "answer": "SOLID는 단일 책임, 개방-폐쇄, 리스코프 치환, 인터페이스 분리, 의존성 역전 원칙입니다. 유지보수 가능하고 확장 가능한 설계를 위한 지침입니다.",
+    "tails": [
+      "각 원칙의 실제 예시를 들어보세요",
+      "SOLID를 지키지 않으면 생기는 문제는?"
+    ],
+    "tags": [
+      "java"
+    ]
+  },
+  {
+    "type": "interview",
+    "title": "💼 인덱스란?",
+    "question": "데이터베이스 인덱스를 설명하세요",
+    "answer": "인덱스는 검색 속도를 높이기 위한 자료구조입니다. B-Tree가 일반적이며 조회는 빨라지지만 삽입/수정/삭제는 느려집니다. 선택도가 높은 컬럼에 적용합니다.",
+    "tails": [
+      "클러스터드 인덱스와 논클러스터드 인덱스의 차이는?",
+      "인덱스를 남용하면 안 되는 이유는?"
+    ],
+    "tags": [
+      "databasetheory"
+    ]
+  },
+  {
+    "type": "interview",
+    "title": "📝 useEffect와 useLayoutEffect",
+    "question": "두 훅의 차이를 설명하세요",
+    "answer": "useEffect는 비동기로 렌더링 후 실행되고 useLayoutEffect는 동기로 DOM 업데이트 전 실행됩니다. 레이아웃 측정이나 DOM 조작 시 useLayoutEffect를 사용합니다.",
+    "tails": [
+      "useLayoutEffect 사용 예시는?",
+      "SSR에서 useLayoutEffect 주의사항은?"
+    ],
+    "tags": [
+      "react"
+    ]
+  },
+  {
+    "type": "interview",
+    "title": "🤔 HTTP와 HTTPS 차이",
+    "question": "HTTP와 HTTPS의 차이를 설명하세요",
+    "answer": "HTTPS는 HTTP에 SSL/TLS 암호화를 추가한 프로토콜입니다. 데이터 기밀성과 무결성을 보장하며 인증서로 서버를 검증합니다. 443 포트를 사용합니다.",
+    "tails": [
+      "대칭키와 비대칭키 암호화란?",
+      "HTTPS 핸드셰이크 과정은?"
+    ],
+    "tags": [
+      "network"
+    ]
+  },
+  {
+    "type": "interview",
+    "title": "🎯 메모이제이션이란?",
+    "question": "React의 메모이제이션을 설명하세요",
+    "answer": "메모이제이션은 계산 결과를 캐싱하는 최적화 기법입니다. useMemo는 값을, useCallback은 함수를, memo는 컴포넌트를 메모이제이션합니다.",
+    "tails": [
+      "언제 메모이제이션을 사용해야 하나요?",
+      "과도한 메모이제이션의 단점은?"
+    ],
+    "tags": [
+      "react"
+    ]
+  },
+  {
+    "type": "interview",
+    "title": "💼 트랜잭션이란?",
+    "question": "데이터베이스 트랜잭션을 설명하세요",
+    "answer": "트랜잭션은 논리적 작업 단위로 ACID 특성을 보장합니다. 원자성, 일관성, 격리성, 지속성을 만족해야 하며 commit/rollback으로 제어합니다.",
+    "tails": [
+      "격리 수준(Isolation Level)의 종류는?",
+      "데드락이 발생하는 이유는?"
+    ],
+    "tags": [
+      "databasetheory"
+    ]
+  },
+  {
+    "type": "interview",
+    "title": "📝 타입과 인터페이스",
+    "question": "TypeScript의 type과 interface 차이는?",
+    "answer": "interface는 선언 병합이 가능하고 extends로 상속합니다. type은 유니온/인터섹션이 가능하고 더 유연합니다. 객체 타입은 interface를 권장합니다.",
+    "tails": [
+      "언제 type을, 언제 interface를 쓰나요?",
+      "선언 병합이란?"
+    ],
+    "tags": [
+      "typescript"
+    ]
+  },
+  {
+    "type": "interview",
+    "title": "🤔 GC란?",
+    "question": "가비지 컬렉션을 설명하세요",
+    "answer": "GC는 사용하지 않는 메모리를 자동으로 회수하는 메커니즘입니다. Mark-and-Sweep 알고리즘이 일반적이며 순환 참조도 감지합니다.",
+    "tails": [
+      "메모리 누수가 발생하는 경우는?",
+      "WeakMap과 WeakSet의 역할은?"
+    ],
+    "tags": [
+      "javascript"
+    ]
+  },
+  {
+    "type": "interview",
+    "title": "🎯 CSR과 SSR",
+    "question": "CSR과 SSR의 차이를 설명하세요",
+    "answer": "CSR은 클라이언트에서 렌더링하고 SSR은 서버에서 HTML을 생성합니다. CSR은 초기 로딩이 느리지만 이후 빠르고, SSR은 SEO에 유리하지만 서버 부하가 있습니다.",
+    "tails": [
+      "SSG(Static Site Generation)란?",
+      "Next.js의 하이브리드 렌더링은?"
+    ],
+    "tags": [
+      "react"
+    ]
+  },
+  {
+    "type": "interview",
+    "title": "💼 프로세스와 스레드",
+    "question": "프로세스와 스레드의 차이를 설명하세요",
+    "answer": "프로세스는 독립적인 메모리 공간을 가진 실행 단위이고 스레드는 프로세스 내에서 메모리를 공유하는 실행 단위입니다. 스레드가 더 가볍고 빠릅니다.",
+    "tails": [
+      "멀티프로세싱과 멀티스레딩의 장단점은?",
+      "컨텍스트 스위칭이란?"
+    ],
+    "tags": [
+      "os"
+    ]
+  },
+  {
+    "type": "interview",
+    "title": "📝 해시 테이블이란?",
+    "question": "해시 테이블의 동작 원리를 설명하세요",
+    "answer": "해시 테이블은 키를 해시 함수로 변환해 값을 저장하는 자료구조입니다. 평균 O(1) 시간복잡도를 가지지만 충돌 처리가 필요합니다. 체이닝이나 개방 주소법을 사용합니다.",
+    "tails": [
+      "해시 충돌을 해결하는 방법은?",
+      "좋은 해시 함수의 조건은?"
+    ],
+    "tags": [
+      "datastructure"
+    ]
+  },
+  {
+    "type": "interview",
+    "title": "🤔 Docker란?",
+    "question": "Docker의 개념을 설명하세요",
+    "answer": "Docker는 컨테이너 기반 가상화 플랫폼입니다. 애플리케이션과 의존성을 이미지로 패키징해 어디서나 동일하게 실행할 수 있습니다. VM보다 가볍고 빠릅니다.",
+    "tails": [
+      "컨테이너와 가상 머신의 차이는?",
+      "Docker Compose란?"
+    ],
+    "tags": [
+      "docker"
+    ]
+  },
+  {
+    "type": "code_review",
+    "title": "👨‍💻 매직 넘버 제거",
+    "before": "if (status === 1) {\n  approved();\n} else if (status === 2) {\n  rejected();\n}",
+    "after": "const STATUS = {\n  APPROVED: 1,\n  REJECTED: 2\n};\nif (status === STATUS.APPROVED) {\n  approved();\n}",
+    "feedback": "> 숫자 대신 상수로 의미를 명확하게 표현하면 가독성이 높아져요",
+    "language": "javascript",
+    "tags": [
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "type": "code_review",
+    "title": "✅ 조기 반환 패턴",
+    "before": "function validate(data) {\n  if (data) {\n    if (data.name) {\n      return true;\n    }\n  }\n  return false;\n}",
+    "after": "function validate(data) {\n  if (!data) return false;\n  if (!data.name) return false;\n  return true;\n}",
+    "feedback": "> 중첩을 줄이고 조기 반환하면 코드 흐름이 더 명확해져요",
+    "language": "javascript",
+    "tags": [
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "type": "code_review",
+    "title": "⚡ 불필요한 else 제거",
+    "before": "if (condition) {\n  return true;\n} else {\n  return false;\n}",
+    "after": "return condition;",
+    "feedback": "> 불필요한 if-else를 제거하고 조건을 직접 반환하면 간결해요",
+    "language": "javascript",
+    "tags": [
+      "javascript",
+      "python"
+    ]
+  },
+  {
+    "type": "code_review",
+    "title": "🎨 구조 분해 할당 활용",
+    "before": "function User(props) {\n  return (\n    <div>\n      <h1>{props.name}</h1>\n      <p>{props.email}</p>\n    </div>\n  );\n}",
+    "after": "function User({ name, email }) {\n  return (\n    <div>\n      <h1>{name}</h1>\n      <p>{email}</p>\n    </div>\n  );\n}",
+    "feedback": "> 매개변수에서 바로 구조 분해하면 코드가 더 깔끔해져요",
+    "language": "javascript",
+    "tags": [
+      "react",
+      "javascript"
+    ]
+  },
+  {
+    "type": "code_review",
+    "title": "👨‍💻 옵셔널 체이닝 사용",
+    "before": "const name = user && \n  user.profile && \n  user.profile.name;",
+    "after": "const name = user?.profile?.name;",
+    "feedback": "> 옵셔널 체이닝으로 안전하게 접근하면 코드가 간결해져요",
+    "language": "javascript",
+    "tags": [
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "type": "code_review",
+    "title": "✅ map 대신 filter 사용",
+    "before": "const evens = arr.map(x => {\n  if (x % 2 === 0) return x;\n}).filter(x => x !== undefined);",
+    "after": "const evens = arr.filter(\n  x => x % 2 === 0\n);",
+    "feedback": "> filter를 직접 사용하면 불필요한 map과 undefined 제거가 없어져요",
+    "language": "javascript",
+    "tags": [
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "type": "code_review",
+    "title": "⚡ 템플릿 리터럴 활용",
+    "before": "const msg = 'Hello ' + name + \n  '! Welcome to ' + site;",
+    "after": "const msg = `Hello ${name}! \n  Welcome to ${site}`;",
+    "feedback": "> 템플릿 리터럴로 문자열을 조합하면 가독성이 좋아져요",
+    "language": "javascript",
+    "tags": [
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "type": "code_review",
+    "title": "🎨 삼항 연산자 간소화",
+    "before": "const value = condition ? \n  true : false;",
+    "after": "const value = condition;",
+    "feedback": "> boolean 값은 조건문 자체를 사용하면 더 간단해요",
+    "language": "javascript",
+    "tags": [
+      "javascript",
+      "python"
+    ]
+  },
+  {
+    "type": "code_review",
+    "title": "👨‍💻 기본 매개변수 사용",
+    "before": "function greet(name) {\n  name = name || 'Guest';\n  return `Hello ${name}`;\n}",
+    "after": "function greet(name = 'Guest') {\n  return `Hello ${name}`;\n}",
+    "feedback": "> 기본 매개변수로 더 명확하게 기본값을 설정할 수 있어요",
+    "language": "javascript",
+    "tags": [
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "type": "code_review",
+    "title": "✅ includes로 단순화",
+    "before": "if (x === 'a' || x === 'b' || \n  x === 'c') {\n  handle();\n}",
+    "after": "if (['a', 'b', 'c'].includes(x)) {\n  handle();\n}",
+    "feedback": "> 여러 값 비교는 배열과 includes로 간결하게 표현해요",
+    "language": "javascript",
+    "tags": [
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "type": "code_review",
+    "title": "⚡ 화살표 함수 간소화",
+    "before": "arr.map(item => {\n  return item.name;\n});",
+    "after": "arr.map(item => item.name);",
+    "feedback": "> 단순 반환은 중괄호와 return을 생략할 수 있어요",
+    "language": "javascript",
+    "tags": [
+      "javascript",
+      "react"
+    ]
+  },
+  {
+    "type": "code_review",
+    "title": "🎨 Object.assign 대신 스프레드",
+    "before": "const merged = Object.assign(\n  {}, obj1, obj2\n);",
+    "after": "const merged = { \n  ...obj1, \n  ...obj2 \n};",
+    "feedback": "> 스프레드 연산자가 더 직관적이고 읽기 쉬워요",
+    "language": "javascript",
+    "tags": [
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "type": "code_review",
+    "title": "👨‍💻 리스트 컴프리헨션",
+    "before": "result = []\nfor x in range(10):\n  if x % 2 == 0:\n    result.append(x**2)",
+    "after": "result = [x**2 for x in range(10)\n  if x % 2 == 0]",
+    "feedback": "> 파이썬의 리스트 컴프리헨션으로 한 줄에 표현할 수 있어요",
+    "language": "python",
+    "tags": [
+      "python"
+    ]
+  },
+  {
+    "type": "code_review",
+    "title": "✅ 명확한 변수명 사용",
+    "before": "const d = new Date();\nconst t = d.getTime();",
+    "after": "const now = new Date();\nconst timestamp = now.getTime();",
+    "feedback": "> 약어보다 명확한 변수명이 코드 이해에 도움이 돼요",
+    "language": "javascript",
+    "tags": [
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "type": "code_review",
+    "title": "⚡ Array.from 대신 스프레드",
+    "before": "const arr = Array.from(\n  document.querySelectorAll('div')\n);",
+    "after": "const arr = [\n  ...document.querySelectorAll('div')\n];",
+    "feedback": "> 스프레드 연산자가 더 간결하고 현대적이에요",
+    "language": "javascript",
+    "tags": [
+      "javascript",
+      "html"
+    ]
+  },
+  {
+    "type": "code_review",
+    "title": "🎨 switch를 객체로 변환",
+    "before": "switch(type) {\n  case 'A': return 1;\n  case 'B': return 2;\n  case 'C': return 3;\n}",
+    "after": "const typeMap = {\n  'A': 1, 'B': 2, 'C': 3\n};\nreturn typeMap[type];",
+    "feedback": "> 객체 매핑이 switch보다 간결하고 확장하기 쉬워요",
+    "language": "javascript",
+    "tags": [
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "type": "code_review",
+    "title": "👨‍💻 null 병합 연산자",
+    "before": "const value = input !== null &&\n  input !== undefined ?\n  input : 'default';",
+    "after": "const value = input ?? 'default';",
+    "feedback": "> null 병합 연산자로 null/undefined만 체크하면 명확해져요",
+    "language": "javascript",
+    "tags": [
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "type": "code_review",
+    "title": "✅ some/every 활용",
+    "before": "let hasEven = false;\nfor (let x of arr) {\n  if (x % 2 === 0) {\n    hasEven = true;\n    break;\n  }\n}",
+    "after": "const hasEven = arr.some(\n  x => x % 2 === 0\n);",
+    "feedback": "> some 메서드로 조건 검사를 간결하게 표현할 수 있어요",
+    "language": "javascript",
+    "tags": [
+      "javascript",
+      "typescript"
+    ]
+  },
+  {
+    "type": "code_review",
+    "title": "⚡ CSS 변수 활용",
+    "before": ".button {\n  background: #3498db;\n}\n.link {\n  color: #3498db;\n}",
+    "after": ":root {\n  --primary: #3498db;\n}\n.button {\n  background: var(--primary);\n}",
+    "feedback": "> CSS 변수로 색상을 관리하면 일관성과 유지보수가 쉬워져요",
+    "language": "css",
+    "tags": [
+      "css",
+      "html"
+    ]
+  },
+  {
+    "type": "code_review",
+    "title": "🎨 with문 대신 컨텍스트",
+    "before": "file = open('data.txt')\ndata = file.read()\nfile.close()",
+    "after": "with open('data.txt') as file:\n  data = file.read()\n# 자동으로 닫힘",
+    "feedback": "> with문으로 리소스를 안전하게 관리하고 자동으로 정리해요",
+    "language": "python",
+    "tags": [
+      "python"
+    ]
+  },
+  {
+    "type": "meme",
+    "title": "😂 세미콜론의 역습",
+    "image": "https://i.imgflip.com/2/5c7lwq.jpg",
+    "description": "JavaScript에서 세미콜론 하나 빼먹고 3시간 디버깅한 경험",
+    "tags": [
+      "javascript"
+    ]
+  },
+  {
+    "type": "meme",
+    "title": "😅 console.log 디버깅",
+    "image": "https://i.imgflip.com/2/3oevdk.jpg",
+    "description": "디버거? 그게 뭔데? console.log가 최고야",
+    "tags": [
+      "javascript"
+    ]
+  },
+  {
+    "type": "meme",
+    "title": "🤣 코드 리뷰의 진실",
+    "image": "https://i.imgflip.com/2/4t0m5.jpg",
+    "description": "내 코드: 예술작품 / 남의 코드: 이게 뭐야",
+    "tags": [
+      "git"
+    ]
+  },
+  {
+    "type": "meme",
+    "title": "💀 마감 1시간 전",
+    "image": "https://i.imgflip.com/2/5xtog0.jpg",
+    "description": "\"거의 다 됐어요\" 실제로는 50%도 안 됨",
+    "tags": [
+      "vscode"
+    ]
+  },
+  {
+    "type": "meme",
+    "title": "😂 프로덕션 배포",
+    "image": "https://i.imgflip.com/2/1bij.jpg",
+    "description": "로컬: 완벽 작동 / 프로덕션: 모든 게 터짐",
+    "tags": [
+      "docker"
+    ]
+  },
+  {
+    "type": "meme",
+    "title": "😅 Git 커밋 메시지",
+    "image": "https://i.imgflip.com/2/30b1gx.jpg",
+    "description": "\"fix bug\" \"fix bug2\" \"진짜 마지막 fix\"",
+    "tags": [
+      "git"
+    ]
+  },
+  {
+    "type": "meme",
+    "title": "🤣 스택오버플로우 의존",
+    "image": "https://i.imgflip.com/2/1ur9b0.jpg",
+    "description": "스택오버플로우 다운되면 개발자들 다 집에 가야됨",
+    "tags": [
+      "vscode"
+    ]
+  },
+  {
+    "type": "meme",
+    "title": "💀 변수 네이밍",
+    "image": "https://i.imgflip.com/2/6rkz2b.jpg",
+    "description": "data, data2, finalData, realFinalData...",
+    "tags": [
+      "javascript"
+    ]
+  },
+  {
+    "type": "meme",
+    "title": "😂 주석의 중요성",
+    "image": "https://i.imgflip.com/2/261o4p.jpg",
+    "description": "6개월 전 내가 짠 코드 이해 못하는 현재의 나",
+    "tags": [
+      "python"
+    ]
+  },
+  {
+    "type": "meme",
+    "title": "😅 카피 페이스트",
+    "image": "https://i.imgflip.com/2/2h6c1y.jpg",
+    "description": "Ctrl+C, Ctrl+V가 개발자의 80%를 차지함",
+    "tags": [
+      "vscode"
+    ]
+  },
+  {
+    "type": "meme",
+    "title": "🤣 IE 지원",
+    "image": "https://i.imgflip.com/2/1g8my4.jpg",
+    "description": "크롬/파폭: 완벽 / IE: 페이지가 존재하지 않습니다",
+    "tags": [
+      "html"
+    ]
+  },
+  {
+    "type": "meme",
+    "title": "💀 undefined is not a function",
+    "image": "https://i.imgflip.com/2/2kbn1e.jpg",
+    "description": "JavaScript 에러 메시지의 영원한 친구",
+    "tags": [
+      "javascript"
+    ]
+  },
+  {
+    "type": "meme",
+    "title": "😂 CSS 중앙정렬",
+    "image": "https://i.imgflip.com/2/3lmzyx.jpg",
+    "description": "CSS로 div 중앙정렬하는데 왜 이렇게 어려운거야",
+    "tags": [
+      "css"
+    ]
+  },
+  {
+    "type": "meme",
+    "title": "😅 node_modules",
+    "image": "https://i.imgflip.com/2/17wzy1.jpg",
+    "description": "node_modules 폴더가 블랙홀보다 무거움",
+    "tags": [
+      "nodejs"
+    ]
+  },
+  {
+    "type": "meme",
+    "title": "🤣 프레임워크 선택",
+    "image": "https://i.imgflip.com/2/345v97.jpg",
+    "description": "React? Vue? Angular? 그냥 바닐라 JS 쓸까...",
+    "tags": [
+      "react"
+    ]
+  },
+  {
+    "type": "meme",
+    "title": "💀 npm install",
+    "image": "https://i.imgflip.com/2/4acd7j.jpg",
+    "description": "npm install 하는 동안 커피 5잔 마심",
+    "tags": [
+      "nodejs"
+    ]
+  },
+  {
+    "type": "meme",
+    "title": "😂 README.md 작성",
+    "image": "https://i.imgflip.com/2/26am.jpg",
+    "description": "README: \"TODO: 문서 작성 예정\" (3년째)",
+    "tags": [
+      "github"
+    ]
+  },
+  {
+    "type": "meme",
+    "title": "😅 데이터베이스 마이그레이션",
+    "image": "https://i.imgflip.com/2/vtkj0.jpg",
+    "description": "마이그레이션 롤백? 그런 거 몰라요",
+    "tags": [
+      "mysql"
+    ]
+  },
+  {
+    "type": "meme",
+    "title": "🤣 Python 버전 관리",
+    "image": "https://i.imgflip.com/2/29gymp.jpg",
+    "description": "Python2? Python3? 둘 다 깔려있는데 뭐가 뭔지 모름",
+    "tags": [
+      "python"
+    ]
+  },
+  {
+    "type": "meme",
+    "title": "💀 캐시 클리어",
+    "image": "https://i.imgflip.com/2/2pdq2a.jpg",
+    "description": "문제 해결법: 1. 캐시 클리어 2. 재부팅 3. 포기",
+    "tags": [
+      "docker"
+    ]
+  }
+]

@@ -4,7 +4,7 @@ import type { ContentType } from '../../public/response/content_types';
  * 콘텐츠 DTO (공통 필드)
  */
 interface BaseContentDto {
-  contentId: number;
+  id: number;
   type: ContentType;
   title: string;
   tags: string[];
@@ -21,6 +21,7 @@ interface BaseContentDto {
 export interface CodeTipDto extends BaseContentDto {
   type: 'code_tip';
   code: string;
+  language: string;
   description: string;
 }
 

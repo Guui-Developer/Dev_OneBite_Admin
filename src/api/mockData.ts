@@ -78,7 +78,8 @@ export const mockContentData: LearningData[] = [
     tags: ['javascript'],
     createdAt: '2024-11-25',
     code: 'for (var i = 0; i < 3; i++) {\n  setTimeout(() => console.log(i), 100);\n}',
-    answer: 'var는 함수 스코프를 가지므로 모든 setTimeout이 같은 i를 참조합니다. let을 사용하거나 IIFE를 사용하여 해결할 수 있습니다.'
+    answer: 'var는 함수 스코프를 가지므로 모든 setTimeout이 같은 i를 참조합니다. let을 사용하거나 IIFE를 사용하여 해결할 수 있습니다.',
+    language: 'javascript'
   },
   {
     id: 3,
@@ -98,7 +99,8 @@ export const mockContentData: LearningData[] = [
     createdAt: '2024-11-25',
     before: 'const isActive = user.status === "active" ? true : false;',
     after: 'const isActive = user.status === "active";',
-    feedback: '비교 연산자는 이미 boolean 값을 반환하므로 삼항 연산자가 불필요합니다.'
+    feedback: '비교 연산자는 이미 boolean 값을 반환하므로 삼항 연산자가 불필요합니다.',
+    language: 'javascript'
   },
   {
     id: 5,
